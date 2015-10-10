@@ -46,13 +46,8 @@ type FakeReqFactory struct {
 
 	Buildpack models.Buildpack
 
-	MinAPIVersionFeatureName     string
+	MinAPIVersionCommandName     string
 	MinAPIVersionRequiredVersion semver.Version
-	MinAPIVersionSuccess         bool
-}
-
-func (f *FakeReqFactory) NewDEAApplicationRequirement(name string) requirements.DEAApplicationRequirement {
-	return FakeRequirement{f, false}
 }
 
 func (f *FakeReqFactory) NewApplicationRequirement(name string) requirements.ApplicationRequirement {
@@ -110,10 +105,10 @@ func (f *FakeReqFactory) NewApiEndpointRequirement() requirements.Requirement {
 	return FakeRequirement{f, f.ApiEndpointSuccess}
 }
 
-func (f *FakeReqFactory) NewMinAPIVersionRequirement(featureName string, requiredVersion semver.Version) requirements.Requirement {
-	f.MinAPIVersionFeatureName = featureName
+func (f *FakeReqFactory) NewMinAPIVersionRequirement(commandName string, requiredVersion semver.Version) requirements.Requirement {
+	f.MinAPIVersionCommandName = commandName
 	f.MinAPIVersionRequiredVersion = requiredVersion
-	return FakeRequirement{f, f.MinAPIVersionSuccess}
+	return FakeRequirement{f, true}
 }
 
 type FakeRequirement struct {
