@@ -2,6 +2,7 @@ package actors_test
 
 import (
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -143,7 +144,7 @@ var _ = Describe("Push Actor", func() {
 
 		BeforeEach(func() {
 			files = []resources.AppFileResource{
-				resources.AppFileResource{Path: "example-app/.cfignore"},
+				resources.AppFileResource{Path: "exaple-app/.cfignore"},
 				resources.AppFileResource{Path: "example-app/app.rb"},
 				resources.AppFileResource{Path: "example-app/config.ru"},
 			}
@@ -167,6 +168,14 @@ var _ = Describe("Push Actor", func() {
 
 			files, err := actor.PopulateFileMode(fixturesDir, files)
 			Ω(err).NotTo(HaveOccurred())
+
+			fmt.Println("File 1 mode", files[0].Mode)
+			fmt.Printf("File 1: %#v\n\n", files[0])
+			fmt.Println("File 2 mode", files[1].Mode)
+			fmt.Printf("File 2: %#v\n\n", files[1])
+			fmt.Println("File 3 mode", files[2].Mode)
+			fmt.Printf("File 3: %#v\n\n", files[2])
+
 			if runtime.GOARCH == "386" { //32bit filemode is different
 				Ω(files[0].Mode).ToNot(Equal(""))
 				Ω(files[1].Mode).ToNot(Equal(""))

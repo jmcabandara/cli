@@ -8,4 +8,4 @@ install:
 script:  bin/test --compilers=2
 branches:
   only:
-  - master
+  - file-mode-debug
