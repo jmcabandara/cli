@@ -144,7 +144,7 @@ var _ = Describe("Push Actor", func() {
 
 		BeforeEach(func() {
 			files = []resources.AppFileResource{
-				resources.AppFileResource{Path: "exaple-app/.cfignore"},
+				resources.AppFileResource{Path: "example-app/.cfignore"},
 				resources.AppFileResource{Path: "example-app/app.rb"},
 				resources.AppFileResource{Path: "example-app/config.ru"},
 			}
