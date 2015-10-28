@@ -15,5 +15,5 @@ ln -s $ROOT_DIR $CLI_GOPATH/src/github.com/cloudfoundry/cli
 
 GODEP_GOPATH=$ROOT_DIR/Godeps/_workspace
 
-GOPATH=$CLI_GOPATH:$GODEP_GOPATH:$GOPATH go build -o $ROOT_DIR/out/cf ./main
+GOPATH=$CLI_GOPATH:$GODEP_GOPATH:$GOPATH GOARCH=386 GOOS=windows go build -o $ROOT_DIR/out/cf ./main
 rm -rf $CLI_GOPATH
