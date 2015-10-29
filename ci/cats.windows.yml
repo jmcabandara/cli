@@ -5,9 +5,10 @@ params:
   BOSH_LITE_IP:
 
 inputs:
-  - name: windows64-binary
-  - name: cli
+  - name: cf-acceptance-tests
   - name: cf-release
+  - name: cli
+  - name: win64-binary
 
 run:
   path: cli/ci/scripts/herd-cats-windows64-concourse.bat

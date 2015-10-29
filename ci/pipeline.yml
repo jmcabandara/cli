@@ -8,6 +8,7 @@ groups:
     - build-win32
     - build-win64
     - build-osx
+    - cats-win64
   - name: bump
     jobs:
     - patch-bump
@@ -20,6 +21,20 @@ resources:
     uri: git@github.com:cloudfoundry/cli
     private_key: {{cf-cli-eng-github-private-key}}
     branch: concourse-reloaded
+
+- name: cf-release
+  type: git
+  source:
+    uri: git@github.com:krishicks/cf-release
+    private_key: {{cf-cli-eng-github-private-key}}
+    branch: windows-delete-fix
+
+- name: cf-acceptance-tests
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry/cf-acceptance-tests
+    private_key: {{cf-cli-eng-github-private-key}}
+    branch: dont-delete-app-file-105779022
 
 - name: version
   type: semver
@@ -88,46 +103,6 @@ jobs:
     trigger: true
   - task: unit-tests
     file: cli/ci/unit.linux.yml
-
-# - name: unit-tests-win32
-#   public: true
-#   plan:
-#   - get: cli
-#     trigger: true
-#   - task: unit-tests
-#     file: cli/ci/unit.windows32.yml
-
-# - name: unit-tests-win64
-#   public: true
-#   plan:
-#   - get: cli
-#     trigger: true
-#   - task: unit-tests
-#     file: cli/ci/unit.windows.yml
-
-# - name: build-win64
-#   public: true
-#   plan:
-#   - get: cli
-#     trigger: false
-#     passed: [unit-tests-linux]
-#   - get: version
-#     trigger: true
-#   - task: build
-#     config:
-#       platform: windows
-#       params:
-#         CF_EXE_NAME: cf.exe
-#         BITS: 64
-#       inputs:
-#         - name: cli
-#           path: gopath/src/github.com/cloudfoundry/cli
-#       run:
-#         path: gopath/src/github.com/cloudfoundry/cli/ci/scripts/windows-build.bat
-#   - put: win64-binary
-#     params:
-#       from: cf-windows64-binary.exe
-#       to: win64-binary.exe
 
 - name: build-linux64
   public: true
@@ -324,3 +299,21 @@ jobs:
     params:
       from: build/gopath/src/github.com/cloudfoundry/cli/out/cf
       to: osx-binary
+
+- name: cats-win64
+  public: true
+  plan:
+  - aggregate:
+    - get: cf-release
+      trigger: true
+    - get: cf-acceptance-tests
+      trigger: true
+    - get: cli
+      trigger: false
+    - get: win64-binary
+      trigger: true
+      passed: [build-win64]
+  - task: cats
+    path: ci/cats.windows.yml
+    params:
+      BOSH_LITE_IP: {{bosh-lite-ip-windows}}
