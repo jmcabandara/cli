@@ -138,7 +138,7 @@ jobs:
           export GODEP_GOPATH=$PWD/Godeps/_workspace
           export GOPATH=$GODEP_GOPATH:$GOPATH
 
-          GOARCH= GOOS=linux go build -o out/cf ./main
+          GOARCH=amd64 GOOS=linux go build -o out/cf ./main
   - put: linux64-binary
     params:
       from: build/gopath/src/github.com/cloudfoundry/cli/out/cf
