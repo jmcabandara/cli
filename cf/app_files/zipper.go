@@ -2,6 +2,8 @@ package app_files
 
 import (
 	"archive/zip"
+	"bufio"
+	"bytes"
 	"io"
 	"os"
 	"path/filepath"
@@ -29,9 +31,57 @@ func (zipper ApplicationZipper) Zip(dirOrZipFile string, targetFile *os.File) (e
 	return
 }
 
-func (zipper ApplicationZipper) IsZipFile(file string) (result bool) {
-	_, err := zip.OpenReader(file)
-	return err == nil
+func (zipper ApplicationZipper) IsZipFile(name string) bool {
+	// is it a directory?
+	f, err := os.Open(name)
+	if err != nil {
+		return false
+	}
+
+	fi, err := f.Stat()
+	if err != nil {
+		return false
+	}
+
+	if fi.IsDir() {
+		return false
+	}
+
+	// is it a zip file?
+	_, err = zip.OpenReader(name)
+	if err == nil {
+		return true
+	}
+
+	// is it a zip file with an offset file header signature?
+	if err == zip.ErrFormat {
+		loc, err := zipper.zipFileHeaderLocation(name)
+		if err != nil {
+			return false
+		}
+
+		if loc > int64(-1) {
+			f, err := os.Open(name)
+			if err != nil {
+				return false
+			}
+
+			defer f.Close()
+
+			fi, err := f.Stat()
+			if err != nil {
+				return false
+			}
+
+			readerAt := io.NewSectionReader(f, loc, fi.Size())
+			_, err = zip.NewReader(readerAt, fi.Size())
+			if err == nil {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func writeZipFile(dir string, targetFile *os.File) error {
@@ -78,46 +128,120 @@ func writeZipFile(dir string, targetFile *os.File) error {
 	})
 }
 
-func (zipper ApplicationZipper) Unzip(appDir string, destDir string) error {
-	r, err := zip.OpenReader(appDir)
+func (zipper ApplicationZipper) extractFile(f *zip.File, destDir string) error {
+	if f.FileInfo().IsDir() {
+		os.MkdirAll(filepath.Join(destDir, f.Name), os.ModeDir|os.ModePerm)
+		return nil
+	}
+
+	var rc io.ReadCloser
+	rc, err := f.Open()
 	if err != nil {
 		return err
 	}
-	defer r.Close()
 
-	for _, f := range r.File {
-		// anonymous func allows the defer of rc.Close()
-		err = func() error {
-			if f.FileInfo().IsDir() {
-				os.MkdirAll(filepath.Join(destDir, f.Name), os.ModeDir|os.ModePerm)
-				return nil
+	defer rc.Close()
+
+	destFilePath := filepath.Join(destDir, f.Name)
+
+	err = fileutils.CopyReaderToPath(rc, destFilePath)
+	if err != nil {
+		return err
+	}
+
+	err = os.Chmod(destFilePath, f.FileInfo().Mode())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (zipper ApplicationZipper) zipFileHeaderLocation(name string) (int64, error) {
+	f, err := os.Open(name)
+	if err != nil {
+		return -1, err
+	}
+
+	defer f.Close()
+
+	// zip file header signature, 0x04034b50, reversed due to little-endian byte order
+	firstByte := byte(0x50)
+	restBytes := []byte{0x4b, 0x03, 0x04}
+	count := int64(-1)
+	foundAt := int64(-1)
+
+	reader := bufio.NewReader(f)
+
+	keepGoing := true
+	for keepGoing {
+		count++
+
+		b, err := reader.ReadByte()
+		if err != nil {
+			keepGoing = false
+			break
+		}
+
+		if b == firstByte {
+			nextBytes, err := reader.Peek(3)
+			if err != nil {
+				keepGoing = false
 			}
+			if bytes.Compare(nextBytes, restBytes) == 0 {
+				foundAt = count
+				keepGoing = false
+				break
+			}
+		}
+	}
 
-			var rc io.ReadCloser
-			rc, err = f.Open()
+	return foundAt, nil
+}
+
+func (zipper ApplicationZipper) Unzip(name string, destDir string) error {
+	rc, err := zip.OpenReader(name)
+
+	if err == nil {
+		defer rc.Close()
+		for _, f := range rc.File {
+			err := zipper.extractFile(f, destDir)
 			if err != nil {
 				return err
 			}
+		}
+	}
 
-			defer rc.Close()
-
-			destFilePath := filepath.Join(destDir, f.Name)
-
-			err = fileutils.CopyReaderToPath(rc, destFilePath)
-			if err != nil {
-				return err
-			}
-
-			err = os.Chmod(destFilePath, f.FileInfo().Mode())
-			if err != nil {
-				return err
-			}
-
-			return nil
-		}()
-
+	if err == zip.ErrFormat {
+		loc, err := zipper.zipFileHeaderLocation(name)
 		if err != nil {
 			return err
+		}
+
+		if loc > int64(-1) {
+			f, err := os.Open(name)
+			if err != nil {
+				return err
+			}
+
+			defer f.Close()
+
+			fi, err := f.Stat()
+			if err != nil {
+				return err
+			}
+
+			readerAt := io.NewSectionReader(f, loc, fi.Size())
+			r, err := zip.NewReader(readerAt, fi.Size())
+			if err != nil {
+				return err
+			}
+			for _, f := range r.File {
+				err := zipper.extractFile(f, destDir)
+				if err != nil {
+					return err
+				}
+			}
 		}
 	}
 
