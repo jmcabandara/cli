@@ -530,6 +530,11 @@
       "modified": false
    },
    {
+      "id": "BUILD TIME:",
+      "translation": "BUILD TIME:",
+      "modified": false
+   },
+   {
       "id": "BUILDPACKS",
       "translation": "BUILDPACKS",
       "modified": false
@@ -4350,11 +4355,6 @@
       "modified": false
    },
    {
-      "id": "Server error, error code: 1002, message: cannot set space role because user is not part of the org",
-      "translation": "Server error, error code: 1002, message: cannot set space role because user is not part of the org",
-      "modified": false
-   },
-   {
       "id": "Server error, status code: 403, error code: 10003, message: You are not authorized to perform the requested action",
       "translation": "Server error, status code: 403, error code: 10003, message: You are not authorized to perform the requested action",
       "modified": false
@@ -4787,11 +4787,6 @@
    {
       "id": "The route {{.URL}} is already in use.\nTIP: Change the hostname with -n HOSTNAME or use --random-route to generate a new route and then push again.",
       "translation": "The route {{.URL}} is already in use.\nTIP: Change the hostname with -n HOSTNAME or use --random-route to generate a new route and then push again.",
-      "modified": false
-   },
-   {
-      "id": "The targeted API endpoint could not be reached.",
-      "translation": "The targeted API endpoint could not be reached.",
       "modified": false
    },
    {
