@@ -17,7 +17,7 @@ type DeleteOrg struct {
 	ui      terminal.UI
 	config  core_config.ReadWriter
 	orgRepo organizations.OrganizationRepository
-	orgReq  requirements.OrganizationRequirement
+	orgReq  requirements.Organization
 }
 
 func init() {

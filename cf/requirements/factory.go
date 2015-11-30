@@ -15,7 +15,7 @@ type Factory interface {
 	NewSpaceRequirement(name string) SpaceRequirement
 	NewTargetedSpaceRequirement() Requirement
 	NewTargetedOrgRequirement() TargetedOrgRequirement
-	NewOrganizationRequirement(name string) OrganizationRequirement
+	NewOrganizationRequirement(name string) Organization
 	NewDomainRequirement(name string) DomainRequirement
 	NewUserRequirement(username string, wantGuid bool) UserRequirement
 	NewBuildpackRequirement(buildpack string) BuildpackRequirement
@@ -85,7 +85,7 @@ func (f apiRequirementFactory) NewTargetedOrgRequirement() TargetedOrgRequiremen
 	)
 }
 
-func (f apiRequirementFactory) NewOrganizationRequirement(name string) OrganizationRequirement {
+func (f apiRequirementFactory) NewOrganizationRequirement(name string) Organization {
 	return NewOrganizationRequirement(
 		name,
 		f.ui,

@@ -82,7 +82,7 @@ func (f *FakeReqFactory) NewSpaceRequirement(name string) requirements.SpaceRequ
 	return FakeRequirement{f, !f.SpaceRequirementFails}
 }
 
-func (f *FakeReqFactory) NewOrganizationRequirement(name string) requirements.OrganizationRequirement {
+func (f *FakeReqFactory) NewOrganizationRequirement(name string) requirements.Organization {
 	f.OrganizationName = name
 	return FakeRequirement{f, !f.OrganizationRequirementFails}
 }

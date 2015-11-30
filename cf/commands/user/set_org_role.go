@@ -24,7 +24,7 @@ type SetOrgRole struct {
 	flagRepo feature_flags.FeatureFlagRepository
 	userRepo api.UserRepository
 	userReq  requirements.UserRequirement
-	orgReq   requirements.OrganizationRequirement
+	orgReq   requirements.Organization
 }
 
 func init() {

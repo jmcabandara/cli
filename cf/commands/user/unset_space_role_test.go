@@ -36,7 +36,7 @@ var _ = Describe("UnsetSpaceRole", func() {
 
 		loginRequirement        requirements.Requirement
 		userRequirement         *fakerequirements.FakeUserRequirement
-		organizationRequirement *fakerequirements.FakeOrganizationRequirement
+		organizationRequirement *fakerequirements.FakeOrganization
 	)
 
 	BeforeEach(func() {
@@ -69,7 +69,7 @@ var _ = Describe("UnsetSpaceRole", func() {
 		userRequirement.ExecuteReturns(true)
 		factory.NewUserRequirementReturns(userRequirement)
 
-		organizationRequirement = &fakerequirements.FakeOrganizationRequirement{}
+		organizationRequirement = &fakerequirements.FakeOrganization{}
 		organizationRequirement.ExecuteReturns(true)
 		factory.NewOrganizationRequirementReturns(organizationRequirement)
 	})

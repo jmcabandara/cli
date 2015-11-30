@@ -56,13 +56,13 @@ type FakeFactory struct {
 	newTargetedOrgRequirementReturns     struct {
 		result1 requirements.TargetedOrgRequirement
 	}
-	NewOrganizationRequirementStub        func(name string) requirements.OrganizationRequirement
+	NewOrganizationRequirementStub        func(name string) requirements.Organization
 	newOrganizationRequirementMutex       sync.RWMutex
 	newOrganizationRequirementArgsForCall []struct {
 		name string
 	}
 	newOrganizationRequirementReturns struct {
-		result1 requirements.OrganizationRequirement
+		result1 requirements.Organization
 	}
 	NewDomainRequirementStub        func(name string) requirements.DomainRequirement
 	newDomainRequirementMutex       sync.RWMutex
@@ -300,7 +300,7 @@ func (fake *FakeFactory) NewTargetedOrgRequirementReturns(result1 requirements.T
 	}{result1}
 }
 
-func (fake *FakeFactory) NewOrganizationRequirement(name string) requirements.OrganizationRequirement {
+func (fake *FakeFactory) NewOrganizationRequirement(name string) requirements.Organization {
 	fake.newOrganizationRequirementMutex.Lock()
 	fake.newOrganizationRequirementArgsForCall = append(fake.newOrganizationRequirementArgsForCall, struct {
 		name string
@@ -325,10 +325,10 @@ func (fake *FakeFactory) NewOrganizationRequirementArgsForCall(i int) string {
 	return fake.newOrganizationRequirementArgsForCall[i].name
 }
 
-func (fake *FakeFactory) NewOrganizationRequirementReturns(result1 requirements.OrganizationRequirement) {
+func (fake *FakeFactory) NewOrganizationRequirementReturns(result1 requirements.Organization) {
 	fake.NewOrganizationRequirementStub = nil
 	fake.newOrganizationRequirementReturns = struct {
-		result1 requirements.OrganizationRequirement
+		result1 requirements.Organization
 	}{result1}
 }
 

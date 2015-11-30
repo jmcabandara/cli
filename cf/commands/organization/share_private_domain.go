@@ -16,7 +16,7 @@ type SharePrivateDomain struct {
 	config     core_config.Reader
 	orgRepo    organizations.OrganizationRepository
 	domainRepo api.DomainRepository
-	orgReq     requirements.OrganizationRequirement
+	orgReq     requirements.Organization
 }
 
 func init() {

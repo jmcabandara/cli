@@ -14,7 +14,7 @@ type CreateDomain struct {
 	ui         terminal.UI
 	config     core_config.Reader
 	domainRepo api.DomainRepository
-	orgReq     requirements.OrganizationRequirement
+	orgReq     requirements.Organization
 }
 
 func init() {

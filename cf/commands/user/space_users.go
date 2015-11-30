@@ -19,7 +19,7 @@ type SpaceUsers struct {
 	config      core_config.Reader
 	spaceRepo   spaces.SpaceRepository
 	userRepo    api.UserRepository
-	orgReq      requirements.OrganizationRequirement
+	orgReq      requirements.Organization
 	pluginModel *[]plugin_models.GetSpaceUsers_Model
 	pluginCall  bool
 }

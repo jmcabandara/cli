@@ -14,7 +14,7 @@ type SetQuota struct {
 	ui        terminal.UI
 	config    core_config.Reader
 	quotaRepo quotas.QuotaRepository
-	orgReq    requirements.OrganizationRequirement
+	orgReq    requirements.Organization
 }
 
 func init() {

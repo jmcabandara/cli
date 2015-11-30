@@ -20,7 +20,7 @@ type UnsetSpaceRole struct {
 	userRepo  api.UserRepository
 	flagRepo  feature_flags.FeatureFlagRepository
 	userReq   requirements.UserRequirement
-	orgReq    requirements.OrganizationRequirement
+	orgReq    requirements.Organization
 }
 
 func init() {

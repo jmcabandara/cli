@@ -17,7 +17,7 @@ import (
 type OrgUsers struct {
 	ui          terminal.UI
 	config      core_config.Reader
-	orgReq      requirements.OrganizationRequirement
+	orgReq      requirements.Organization
 	userRepo    api.UserRepository
 	pluginModel *[]plugin_models.GetOrgUsers_Model
 	pluginCall  bool
