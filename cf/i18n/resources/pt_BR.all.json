@@ -3886,8 +3886,7 @@
    },
    {
       "id": "Property '{{.PropertyName}}' found in manifest. This feature is no longer supported. Please remove it and try again.",
-      "translation": "Propriedade '{{.PropertyName}}' localizada no manifest. Esse recurso não é mais
-suportado. Remova-a e tente novamente.",
+      "translation": "Propriedade '{{.PropertyName}}' localizada no manifest. Esse recurso não é mais suportado. Remova-a e tente novamente.",
       "modified": false
    },
    {
@@ -5662,7 +5661,7 @@ suportado. Remova-a e tente novamente.",
    },
    {
       "id": "repo-plugins",
-      "translation": "plug-ins do repositório",
+      "translation": "repo-plugins",
       "modified": false
    },
    {
@@ -5717,8 +5716,7 @@ suportado. Remova-a e tente novamente.",
    },
    {
       "id": "service instances",
-      "translation": "instâncias de
-serviço",
+      "translation": "instâncias de serviço",
       "modified": false
    },
    {
@@ -5728,8 +5726,7 @@ serviço",
    },
    {
       "id": "service plan",
-      "translation": "plano de
-serviços",
+      "translation": "plano de serviços",
       "modified": false
    },
    {

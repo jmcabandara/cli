@@ -2841,7 +2841,7 @@
    },
    {
       "id": "Incorrect Usage. HEALTH_CHECK_TYPE must be \"port\" or \"none\"\\n\\n",
-      "translation": "Falsche Verwendung. HEALTH_CHECK_TYPE muss \"port\" oder \"none\"\ sein.\n\\n",
+      "translation": "Falsche Verwendung. HEALTH_CHECK_TYPE muss \"port\" oder \"none\" sein.\\n\\n",
       "modified": false
    },
    {
@@ -5661,7 +5661,7 @@
    },
    {
       "id": "repo-plugins",
-      "translation": "Repository-Plug-ins",
+      "translation": "repo-plugins",
       "modified": false
    },
    {
