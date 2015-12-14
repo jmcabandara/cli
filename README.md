@@ -124,6 +124,7 @@ Major new feature proposals are given as a publically viewable google document w
 1. Set an environment variable, `GOPATH`, pointing at the directory you created
 1. Get the `cf` source: `go get github.com/cloudfoundry/cli`
   * (Ignore any warnings about "no buildable Go source files")
+1. Get the vendored dependencies: `git submodule update --init` (inside `$GOPATH/src/github.com/cloudfoundry/cli`)
 1. [Fork this repository](https://help.github.com/articles/fork-a-repo/), adding your fork as a remote
 1. Write a new test, see it fail when running `bin/test` (or `ginkgo -p path/to/the/package/being/tested`)
 1. Write code to pass the test
