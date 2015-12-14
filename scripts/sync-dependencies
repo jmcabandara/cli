@@ -1,0 +1,14 @@
+#!/bin/bash
+
+set -ex
+
+# ensure gosub is installed (this will recompile it only if necessary)
+go get github.com/krishicks/gosub
+go install github.com/krishicks/gosub
+
+{
+  gosub list -app github.com/cloudfoundry/cli/main/... | grep -v cloudfoundry/cli
+  gosub list -test github.com/cloudfoundry/cli/main/... | grep -v cloudfoundry/cli
+} > /tmp/packages
+
+cat /tmp/packages | sort | uniq | xargs gosub vendor -gopath $GOPATH

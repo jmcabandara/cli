@@ -1,0 +1,48 @@
+[submodule "vendor/github.com/onsi/ginkgo"]
+	path = vendor/github.com/onsi/ginkgo
+	url = https://github.com/onsi/ginkgo
+[submodule "vendor/github.com/simonleung8/flags"]
+	path = vendor/github.com/simonleung8/flags
+	url = https://github.com/simonleung8/flags
+[submodule "vendor/golang.org/x/crypto"]
+	path = vendor/golang.org/x/crypto
+	url = https://go.googlesource.com/crypto
+[submodule "vendor/golang.org/x/net"]
+	path = vendor/golang.org/x/net
+	url = https://go.googlesource.com/net
+[submodule "vendor/gopkg.in/yaml.v2"]
+	path = vendor/gopkg.in/yaml.v2
+	url = https://gopkg.in/yaml.v2
+[submodule "vendor/github.com/cloudfoundry-incubator/cli-plugin-repo"]
+	path = vendor/github.com/cloudfoundry-incubator/cli-plugin-repo
+	url = https://github.com/cloudfoundry-incubator/cli-plugin-repo
+[submodule "vendor/github.com/cloudfoundry/gofileutils"]
+	path = vendor/github.com/cloudfoundry/gofileutils
+	url = https://github.com/cloudfoundry/gofileutils
+[submodule "vendor/github.com/docker/docker"]
+	path = vendor/github.com/docker/docker
+	url = https://github.com/docker/docker
+[submodule "vendor/github.com/nicksnyder/go-i18n"]
+	path = vendor/github.com/nicksnyder/go-i18n
+	url = https://github.com/nicksnyder/go-i18n
+[submodule "vendor/github.com/blang/semver"]
+	path = vendor/github.com/blang/semver
+	url = https://github.com/blang/semver
+[submodule "vendor/github.com/cloudfoundry/loggregator_consumer"]
+	path = vendor/github.com/cloudfoundry/loggregator_consumer
+	url = https://github.com/cloudfoundry/loggregator_consumer
+[submodule "vendor/github.com/gogo/protobuf"]
+	path = vendor/github.com/gogo/protobuf
+	url = https://github.com/gogo/protobuf
+[submodule "vendor/github.com/gorilla/websocket"]
+	path = vendor/github.com/gorilla/websocket
+	url = https://github.com/gorilla/websocket
+[submodule "vendor/github.com/cloudfoundry/loggregatorlib"]
+	path = vendor/github.com/cloudfoundry/loggregatorlib
+	url = https://github.com/cloudfoundry/loggregatorlib
+[submodule "vendor/github.com/cloudfoundry/noaa"]
+	path = vendor/github.com/cloudfoundry/noaa
+	url = https://github.com/cloudfoundry/noaa
+[submodule "vendor/github.com/onsi/gomega"]
+	path = vendor/github.com/onsi/gomega
+	url = https://github.com/onsi/gomega
