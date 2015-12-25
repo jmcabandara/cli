@@ -21,10 +21,6 @@ type CreateUserProvidedService struct {
 	userProvidedServiceInstanceRepo api.UserProvidedServiceInstanceRepository
 }
 
-func init() {
-	command_registry.Register(&CreateUserProvidedService{})
-}
-
 func (cmd *CreateUserProvidedService) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["p"] = &cliFlags.StringFlag{Name: "p", Usage: T("Credentials")}

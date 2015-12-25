@@ -17,10 +17,6 @@ type Authenticate struct {
 	authenticator authentication.AuthenticationRepository
 }
 
-func init() {
-	command_registry.Register(&Authenticate{})
-}
-
 func (cmd *Authenticate) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "auth",

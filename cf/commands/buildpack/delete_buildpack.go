@@ -16,10 +16,6 @@ type DeleteBuildpack struct {
 	buildpackRepo api.BuildpackRepository
 }
 
-func init() {
-	command_registry.Register(&DeleteBuildpack{})
-}
-
 func (cmd *DeleteBuildpack) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.buildpackRepo = deps.RepoLocator.GetBuildpackRepository()

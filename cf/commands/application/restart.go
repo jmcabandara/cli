@@ -24,10 +24,6 @@ type Restart struct {
 	appReq  requirements.ApplicationRequirement
 }
 
-func init() {
-	command_registry.Register(&Restart{})
-}
-
 func (cmd *Restart) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "restart",

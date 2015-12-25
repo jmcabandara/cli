@@ -17,10 +17,6 @@ type SetQuota struct {
 	orgReq    requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&SetQuota{})
-}
-
 func (cmd *SetQuota) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "set-quota",

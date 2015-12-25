@@ -24,10 +24,6 @@ type CreateBuildpack struct {
 	buildpackBitsRepo api.BuildpackBitsRepository
 }
 
-func init() {
-	command_registry.Register(&CreateBuildpack{})
-}
-
 func (cmd *CreateBuildpack) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["enable"] = &cliFlags.BoolFlag{Name: "enable", Usage: T("Enable the buildpack to be used for staging")}

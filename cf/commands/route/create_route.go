@@ -27,10 +27,6 @@ type CreateRoute struct {
 	domainReq requirements.DomainRequirement
 }
 
-func init() {
-	command_registry.Register(&CreateRoute{})
-}
-
 func (cmd *CreateRoute) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["n"] = &cliFlags.StringFlag{Name: "n", Usage: T("Hostname for the route")}

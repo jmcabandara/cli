@@ -10,17 +10,13 @@ import (
 	"github.com/simonleung8/flags"
 )
 
-type listRunningSecurityGroups struct {
+type ListRunningSecurityGroups struct {
 	ui                       terminal.UI
 	runningSecurityGroupRepo running.RunningSecurityGroupsRepo
 	configRepo               core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&listRunningSecurityGroups{})
-}
-
-func (cmd *listRunningSecurityGroups) MetaData() command_registry.CommandMetadata {
+func (cmd *ListRunningSecurityGroups) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "running-security-groups",
 		Description: T("List security groups in the set of security groups for running applications"),
@@ -28,7 +24,7 @@ func (cmd *listRunningSecurityGroups) MetaData() command_registry.CommandMetadat
 	}
 }
 
-func (cmd *listRunningSecurityGroups) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
+func (cmd *ListRunningSecurityGroups) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
 	if len(fc.Args()) != 0 {
 		cmd.ui.Failed(T("Incorrect Usage. No argument required\n\n") + command_registry.Commands.CommandUsage("running-security-groups"))
 	}
@@ -37,14 +33,14 @@ func (cmd *listRunningSecurityGroups) Requirements(requirementsFactory requireme
 	return requirements, nil
 }
 
-func (cmd *listRunningSecurityGroups) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
+func (cmd *ListRunningSecurityGroups) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.configRepo = deps.Config
 	cmd.runningSecurityGroupRepo = deps.RepoLocator.GetRunningSecurityGroupsRepository()
 	return cmd
 }
 
-func (cmd *listRunningSecurityGroups) Execute(context flags.FlagContext) {
+func (cmd *ListRunningSecurityGroups) Execute(context flags.FlagContext) {
 	cmd.ui.Say(T("Acquiring running security groups as '{{.username}}'", map[string]interface{}{
 		"username": terminal.EntityNameColor(cmd.configRepo.Username()),
 	}))

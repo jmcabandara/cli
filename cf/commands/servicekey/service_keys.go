@@ -19,10 +19,6 @@ type ServiceKeys struct {
 	serviceInstanceRequirement requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&ServiceKeys{})
-}
-
 func (cmd *ServiceKeys) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "service-keys",

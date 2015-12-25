@@ -27,10 +27,6 @@ type Stop struct {
 	appReq  requirements.ApplicationRequirement
 }
 
-func init() {
-	command_registry.Register(&Stop{})
-}
-
 func (cmd *Stop) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "stop",

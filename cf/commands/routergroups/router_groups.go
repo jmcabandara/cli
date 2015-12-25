@@ -17,10 +17,6 @@ type RouterGroups struct {
 	config         core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&RouterGroups{})
-}
-
 func (cmd *RouterGroups) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "router-groups",

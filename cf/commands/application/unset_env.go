@@ -19,10 +19,6 @@ type UnsetEnv struct {
 	appReq  requirements.ApplicationRequirement
 }
 
-func init() {
-	command_registry.Register(&UnsetEnv{})
-}
-
 func (cmd *UnsetEnv) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.config = deps.Config

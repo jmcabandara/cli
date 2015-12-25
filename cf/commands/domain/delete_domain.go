@@ -19,10 +19,6 @@ type DeleteDomain struct {
 	domainRepo api.DomainRepository
 }
 
-func init() {
-	command_registry.Register(&DeleteDomain{})
-}
-
 func (cmd *DeleteDomain) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

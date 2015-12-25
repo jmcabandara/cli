@@ -18,10 +18,6 @@ type UpdateSpaceQuota struct {
 	spaceQuotaRepo space_quotas.SpaceQuotaRepository
 }
 
-func init() {
-	command_registry.Register(&UpdateSpaceQuota{})
-}
-
 func (cmd *UpdateSpaceQuota) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["i"] = &cliFlags.StringFlag{Name: "i", Usage: T("Maximum amount of memory an application instance can have (e.g. 1024M, 1G, 10G). -1 represents an unlimited amount.")}

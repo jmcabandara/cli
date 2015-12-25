@@ -27,10 +27,6 @@ type ShowSpace struct {
 	pluginCall  bool
 }
 
-func init() {
-	command_registry.Register(&ShowSpace{})
-}
-
 func (cmd *ShowSpace) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["guid"] = &cliFlags.BoolFlag{Name: "guid", Usage: T("Retrieve and display the given space's guid.  All other output for the space is suppressed.")}

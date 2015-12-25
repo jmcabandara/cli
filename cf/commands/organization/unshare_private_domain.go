@@ -19,10 +19,6 @@ type UnsharePrivateDomain struct {
 	orgReq     requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&UnsharePrivateDomain{})
-}
-
 func (cmd *UnsharePrivateDomain) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "unshare-private-domain",

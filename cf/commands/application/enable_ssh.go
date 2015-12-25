@@ -20,10 +20,6 @@ type EnableSSH struct {
 	appRepo applications.ApplicationRepository
 }
 
-func init() {
-	command_registry.Register(&EnableSSH{})
-}
-
 func (cmd *EnableSSH) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "enable-ssh",

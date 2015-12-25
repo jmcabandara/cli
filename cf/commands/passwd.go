@@ -17,10 +17,6 @@ type Password struct {
 	config  core_config.ReadWriter
 }
 
-func init() {
-	command_registry.Register(&Password{})
-}
-
 func (cmd *Password) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "passwd",

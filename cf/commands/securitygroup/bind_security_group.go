@@ -24,10 +24,6 @@ type BindSecurityGroup struct {
 	spaceBinder       sgbinder.SecurityGroupSpaceBinder
 }
 
-func init() {
-	command_registry.Register(&BindSecurityGroup{})
-}
-
 func (cmd *BindSecurityGroup) MetaData() command_registry.CommandMetadata {
 	primaryUsage := T("CF_NAME bind-security-group SECURITY_GROUP ORG SPACE")
 	tipUsage := T("TIP: Changes will not apply to existing running applications until they are restarted.")

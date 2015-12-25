@@ -35,10 +35,6 @@ type ShowApp struct {
 	pluginCall       bool
 }
 
-func init() {
-	command_registry.Register(&ShowApp{})
-}
-
 func (cmd *ShowApp) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["guid"] = &cliFlags.BoolFlag{Name: "guid", Usage: T("Retrieve and display the given app's guid.  All other health and status output for the app is suppressed.")}

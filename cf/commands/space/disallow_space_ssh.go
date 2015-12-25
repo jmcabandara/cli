@@ -19,10 +19,6 @@ type DisallowSpaceSSH struct {
 	spaceRepo spaces.SpaceRepository
 }
 
-func init() {
-	command_registry.Register(&DisallowSpaceSSH{})
-}
-
 func (cmd *DisallowSpaceSSH) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "disallow-space-ssh",

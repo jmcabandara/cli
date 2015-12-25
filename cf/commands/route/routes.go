@@ -21,10 +21,6 @@ type ListRoutes struct {
 	config    core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&ListRoutes{})
-}
-
 func (cmd *ListRoutes) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["orglevel"] = &cliFlags.BoolFlag{Name: "orglevel", Usage: T("List all the routes for all spaces of current organization")}

@@ -36,10 +36,6 @@ type sshInfo struct {
 	SSHEndpointFingerprint string `json:"app_ssh_host_key_fingerprint"`
 }
 
-func init() {
-	command_registry.Register(&SSH{})
-}
-
 func (cmd *SSH) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["L"] = &cliFlags.StringSliceFlag{Name: "L", Usage: T("Local port forward specification. This flag can be defined more than once.")}

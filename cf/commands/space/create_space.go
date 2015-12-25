@@ -28,10 +28,6 @@ type CreateSpace struct {
 	spaceQuotaRepo  space_quotas.SpaceQuotaRepository
 }
 
-func init() {
-	command_registry.Register(&CreateSpace{})
-}
-
 func (cmd *CreateSpace) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["o"] = &cliFlags.StringFlag{Name: "o", Usage: T("Organization")}

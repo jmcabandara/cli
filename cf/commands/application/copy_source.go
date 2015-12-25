@@ -29,10 +29,6 @@ type CopySource struct {
 	appRestart        ApplicationRestarter
 }
 
-func init() {
-	command_registry.Register(&CopySource{})
-}
-
 func (cmd *CopySource) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["no-restart"] = &cliFlags.BoolFlag{Name: "no-restart", Usage: T("Override restart of the application in target environment after copy-source completes")}

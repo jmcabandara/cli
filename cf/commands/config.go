@@ -19,10 +19,6 @@ type ConfigCommands struct {
 	config core_config.ReadWriter
 }
 
-func init() {
-	command_registry.Register(&ConfigCommands{})
-}
-
 func (cmd *ConfigCommands) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["async-timeout"] = &cliFlags.IntFlag{Name: "async-timeout", Usage: T("Timeout for async HTTP requests")}

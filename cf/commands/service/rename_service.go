@@ -19,10 +19,6 @@ type RenameService struct {
 	serviceInstanceReq requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&RenameService{})
-}
-
 func (cmd *RenameService) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "rename-service",

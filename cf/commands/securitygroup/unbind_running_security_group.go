@@ -14,18 +14,14 @@ import (
 	"github.com/simonleung8/flags"
 )
 
-type unbindFromRunningGroup struct {
+type UnbindFromRunningGroup struct {
 	ui                terminal.UI
 	configRepo        core_config.Reader
 	securityGroupRepo security_groups.SecurityGroupRepo
 	runningGroupRepo  running.RunningSecurityGroupsRepo
 }
 
-func init() {
-	command_registry.Register(&unbindFromRunningGroup{})
-}
-
-func (cmd *unbindFromRunningGroup) MetaData() command_registry.CommandMetadata {
+func (cmd *UnbindFromRunningGroup) MetaData() command_registry.CommandMetadata {
 	primaryUsage := T("CF_NAME unbind-running-security-group SECURITY_GROUP")
 	tipUsage := T("TIP: Changes will not apply to existing running applications until they are restarted.")
 	return command_registry.CommandMetadata{
@@ -35,7 +31,7 @@ func (cmd *unbindFromRunningGroup) MetaData() command_registry.CommandMetadata {
 	}
 }
 
-func (cmd *unbindFromRunningGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
+func (cmd *UnbindFromRunningGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
 	if len(fc.Args()) != 1 {
 		cmd.ui.Failed(T("Incorrect Usage. Requires an argument\n\n") + command_registry.Commands.CommandUsage("unbind-running-security-group"))
 	}
@@ -45,7 +41,7 @@ func (cmd *unbindFromRunningGroup) Requirements(requirementsFactory requirements
 	}, nil
 }
 
-func (cmd *unbindFromRunningGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
+func (cmd *UnbindFromRunningGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.configRepo = deps.Config
 	cmd.securityGroupRepo = deps.RepoLocator.GetSecurityGroupRepository()
@@ -53,7 +49,7 @@ func (cmd *unbindFromRunningGroup) SetDependency(deps command_registry.Dependenc
 	return cmd
 }
 
-func (cmd *unbindFromRunningGroup) Execute(context flags.FlagContext) {
+func (cmd *UnbindFromRunningGroup) Execute(context flags.FlagContext) {
 	name := context.Args()[0]
 
 	securityGroup, err := cmd.securityGroupRepo.Read(name)

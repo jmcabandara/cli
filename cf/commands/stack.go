@@ -17,10 +17,6 @@ type ListStack struct {
 	stacksRepo stacks.StackRepository
 }
 
-func init() {
-	command_registry.Register(&ListStack{})
-}
-
 func (cmd *ListStack) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["guid"] = &cliFlags.BoolFlag{Name: "guid", Usage: T("Retrieve and display the given stack's guid. All other output for the stack is suppressed.")}

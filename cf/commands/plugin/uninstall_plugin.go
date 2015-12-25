@@ -22,10 +22,6 @@ type PluginUninstall struct {
 	rpcService *rpcService.CliRpcService
 }
 
-func init() {
-	command_registry.Register(&PluginUninstall{})
-}
-
 func (cmd *PluginUninstall) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "uninstall-plugin",

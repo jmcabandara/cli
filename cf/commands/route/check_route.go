@@ -17,10 +17,6 @@ type CheckRoute struct {
 	domainRepo api.DomainRepository
 }
 
-func init() {
-	command_registry.Register(&CheckRoute{})
-}
-
 func (cmd *CheckRoute) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "check-route",

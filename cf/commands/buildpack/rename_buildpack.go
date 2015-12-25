@@ -14,10 +14,6 @@ type RenameBuildpack struct {
 	buildpackRepo api.BuildpackRepository
 }
 
-func init() {
-	command_registry.Register(&RenameBuildpack{})
-}
-
 func (cmd *RenameBuildpack) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "rename-buildpack",

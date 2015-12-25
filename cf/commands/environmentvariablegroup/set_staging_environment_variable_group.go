@@ -17,10 +17,6 @@ type SetStagingEnvironmentVariableGroup struct {
 	environmentVariableGroupRepo environment_variable_groups.EnvironmentVariableGroupsRepository
 }
 
-func init() {
-	command_registry.Register(&SetStagingEnvironmentVariableGroup{})
-}
-
 func (cmd *SetStagingEnvironmentVariableGroup) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "set-staging-environment-variable-group",

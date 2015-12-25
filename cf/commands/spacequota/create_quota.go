@@ -22,10 +22,6 @@ type CreateSpaceQuota struct {
 	orgRepo   organizations.OrganizationRepository
 }
 
-func init() {
-	command_registry.Register(&CreateSpaceQuota{})
-}
-
 func (cmd *CreateSpaceQuota) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["allow-paid-service-plans"] = &cliFlags.BoolFlag{Name: "allow-paid-service-plans", Usage: T("Can provision instances of paid service plans (Default: disallowed)")}

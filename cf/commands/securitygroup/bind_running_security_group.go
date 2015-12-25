@@ -13,18 +13,14 @@ import (
 	"github.com/simonleung8/flags"
 )
 
-type bindToRunningGroup struct {
+type BindToRunningGroup struct {
 	ui                terminal.UI
 	configRepo        core_config.Reader
 	securityGroupRepo security_groups.SecurityGroupRepo
 	runningGroupRepo  running.RunningSecurityGroupsRepo
 }
 
-func init() {
-	command_registry.Register(&bindToRunningGroup{})
-}
-
-func (cmd *bindToRunningGroup) MetaData() command_registry.CommandMetadata {
+func (cmd *BindToRunningGroup) MetaData() command_registry.CommandMetadata {
 	primaryUsage := T("CF_NAME bind-running-security-group SECURITY_GROUP")
 	tipUsage := T("TIP: Changes will not apply to existing running applications until they are restarted.")
 	return command_registry.CommandMetadata{
@@ -34,7 +30,7 @@ func (cmd *bindToRunningGroup) MetaData() command_registry.CommandMetadata {
 	}
 }
 
-func (cmd *bindToRunningGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
+func (cmd *BindToRunningGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
 	if len(fc.Args()) != 1 {
 		cmd.ui.Failed(T("Incorrect Usage. Requires an argument\n\n") + command_registry.Commands.CommandUsage("bind-running-security-group"))
 	}
@@ -44,7 +40,7 @@ func (cmd *bindToRunningGroup) Requirements(requirementsFactory requirements.Fac
 	}, nil
 }
 
-func (cmd *bindToRunningGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
+func (cmd *BindToRunningGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.configRepo = deps.Config
 	cmd.securityGroupRepo = deps.RepoLocator.GetSecurityGroupRepository()
@@ -52,7 +48,7 @@ func (cmd *bindToRunningGroup) SetDependency(deps command_registry.Dependency, p
 	return cmd
 }
 
-func (cmd *bindToRunningGroup) Execute(context flags.FlagContext) {
+func (cmd *BindToRunningGroup) Execute(context flags.FlagContext) {
 	name := context.Args()[0]
 
 	securityGroup, err := cmd.securityGroupRepo.Read(name)

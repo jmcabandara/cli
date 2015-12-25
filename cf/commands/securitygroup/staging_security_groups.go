@@ -10,17 +10,13 @@ import (
 	"github.com/simonleung8/flags"
 )
 
-type listStagingSecurityGroups struct {
+type ListStagingSecurityGroups struct {
 	ui                       terminal.UI
 	stagingSecurityGroupRepo staging.StagingSecurityGroupsRepo
 	configRepo               core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&listStagingSecurityGroups{})
-}
-
-func (cmd *listStagingSecurityGroups) MetaData() command_registry.CommandMetadata {
+func (cmd *ListStagingSecurityGroups) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "staging-security-groups",
 		Description: T("List security groups in the staging set for applications"),
@@ -28,7 +24,7 @@ func (cmd *listStagingSecurityGroups) MetaData() command_registry.CommandMetadat
 	}
 }
 
-func (cmd *listStagingSecurityGroups) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
+func (cmd *ListStagingSecurityGroups) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
 	if len(fc.Args()) != 0 {
 		cmd.ui.Failed(T("Incorrect Usage. No argument required\n\n") + command_registry.Commands.CommandUsage("staging-security-groups"))
 	}
@@ -37,14 +33,14 @@ func (cmd *listStagingSecurityGroups) Requirements(requirementsFactory requireme
 	return requirements, nil
 }
 
-func (cmd *listStagingSecurityGroups) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
+func (cmd *ListStagingSecurityGroups) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.configRepo = deps.Config
 	cmd.stagingSecurityGroupRepo = deps.RepoLocator.GetStagingSecurityGroupsRepository()
 	return cmd
 }
 
-func (cmd *listStagingSecurityGroups) Execute(context flags.FlagContext) {
+func (cmd *ListStagingSecurityGroups) Execute(context flags.FlagContext) {
 	cmd.ui.Say(T("Acquiring staging security group as {{.username}}",
 		map[string]interface{}{
 			"username": terminal.EntityNameColor(cmd.configRepo.Username()),

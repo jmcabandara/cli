@@ -16,10 +16,6 @@ type ListStacks struct {
 	stacksRepo stacks.StackRepository
 }
 
-func init() {
-	command_registry.Register(&ListStacks{})
-}
-
 func (cmd *ListStacks) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "stacks",

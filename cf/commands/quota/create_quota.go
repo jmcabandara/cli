@@ -20,10 +20,6 @@ type CreateQuota struct {
 	quotaRepo quotas.QuotaRepository
 }
 
-func init() {
-	command_registry.Register(&CreateQuota{})
-}
-
 func (cmd *CreateQuota) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["allow-paid-service-plans"] = &cliFlags.BoolFlag{Name: "allow-paid-service-plans", Usage: T("Can provision instances of paid service plans")}

@@ -19,10 +19,6 @@ type OAuthToken struct {
 	pluginCall  bool
 }
 
-func init() {
-	command_registry.Register(&OAuthToken{})
-}
-
 func (cmd *OAuthToken) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "oauth-token",

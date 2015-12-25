@@ -20,10 +20,6 @@ type EnableServiceAccess struct {
 	tokenRefresher authentication.TokenRefresher
 }
 
-func init() {
-	command_registry.Register(&EnableServiceAccess{})
-}
-
 func (cmd *EnableServiceAccess) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["p"] = &cliFlags.StringFlag{Name: "p", Usage: T("Enable access to a specified service plan")}

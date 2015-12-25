@@ -20,10 +20,6 @@ type SecurityGroups struct {
 	configRepo        core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&SecurityGroups{})
-}
-
 func (cmd *SecurityGroups) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "security-groups",

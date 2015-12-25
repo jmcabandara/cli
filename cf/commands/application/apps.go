@@ -26,10 +26,6 @@ type ListApps struct {
 	pluginCall      bool
 }
 
-func init() {
-	command_registry.Register(&ListApps{})
-}
-
 func (cmd *ListApps) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "apps",

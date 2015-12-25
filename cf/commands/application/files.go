@@ -18,10 +18,6 @@ type Files struct {
 	appReq       requirements.ApplicationRequirement
 }
 
-func init() {
-	command_registry.Register(&Files{})
-}
-
 func (cmd *Files) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["i"] = &cliFlags.IntFlag{Name: "i", Usage: T("Instance")}

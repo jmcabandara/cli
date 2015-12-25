@@ -19,10 +19,6 @@ type Restage struct {
 	appStagingWatcher ApplicationStagingWatcher
 }
 
-func init() {
-	command_registry.Register(&Restage{})
-}
-
 func (cmd *Restage) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "restage",

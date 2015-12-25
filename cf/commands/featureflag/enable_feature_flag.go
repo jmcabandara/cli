@@ -16,10 +16,6 @@ type EnableFeatureFlag struct {
 	flagRepo feature_flags.FeatureFlagRepository
 }
 
-func init() {
-	command_registry.Register(&EnableFeatureFlag{})
-}
-
 func (cmd *EnableFeatureFlag) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "enable-feature-flag",

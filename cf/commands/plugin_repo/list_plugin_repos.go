@@ -15,10 +15,6 @@ type ListPluginRepos struct {
 	config core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&ListPluginRepos{})
-}
-
 func (cmd *ListPluginRepos) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "list-plugin-repos",

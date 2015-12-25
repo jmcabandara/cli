@@ -21,10 +21,6 @@ type Scale struct {
 	appRepo   applications.ApplicationRepository
 }
 
-func init() {
-	command_registry.Register(&Scale{})
-}
-
 func (cmd *Scale) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["i"] = &cliFlags.IntFlag{Name: "i", Usage: T("Number of instances")}

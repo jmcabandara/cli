@@ -19,10 +19,6 @@ type SpaceSSHAllowed struct {
 	spaceRepo spaces.SpaceRepository
 }
 
-func init() {
-	command_registry.Register(&SpaceSSHAllowed{})
-}
-
 func (cmd *SpaceSSHAllowed) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "space-ssh-allowed",

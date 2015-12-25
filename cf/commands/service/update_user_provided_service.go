@@ -22,10 +22,6 @@ type UpdateUserProvidedService struct {
 	serviceInstanceReq              requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&UpdateUserProvidedService{})
-}
-
 func (cmd *UpdateUserProvidedService) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["p"] = &cliFlags.StringFlag{Name: "p", Usage: T("Credentials")}

@@ -18,10 +18,6 @@ type ListBuildpacks struct {
 	buildpackRepo api.BuildpackRepository
 }
 
-func init() {
-	command_registry.Register(&ListBuildpacks{})
-}
-
 func (cmd *ListBuildpacks) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "buildpacks",

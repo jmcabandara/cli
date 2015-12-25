@@ -18,10 +18,6 @@ type UnbindService struct {
 	serviceInstanceReq requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&UnbindService{})
-}
-
 func (cmd *UnbindService) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "unbind-service",

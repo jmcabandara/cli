@@ -21,10 +21,6 @@ type DeleteServiceAuthTokenFields struct {
 	authTokenRepo api.ServiceAuthTokenRepository
 }
 
-func init() {
-	command_registry.Register(&DeleteServiceAuthTokenFields{})
-}
-
 func (cmd *DeleteServiceAuthTokenFields) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

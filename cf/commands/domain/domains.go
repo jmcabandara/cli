@@ -18,10 +18,6 @@ type ListDomains struct {
 	domainRepo api.DomainRepository
 }
 
-func init() {
-	command_registry.Register(&ListDomains{})
-}
-
 func (cmd *ListDomains) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "domains",

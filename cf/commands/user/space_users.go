@@ -24,10 +24,6 @@ type SpaceUsers struct {
 	pluginCall  bool
 }
 
-func init() {
-	command_registry.Register(&SpaceUsers{})
-}
-
 func (cmd *SpaceUsers) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "space-users",

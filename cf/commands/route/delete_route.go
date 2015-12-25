@@ -19,10 +19,6 @@ type DeleteRoute struct {
 	domainReq requirements.DomainRequirement
 }
 
-func init() {
-	command_registry.Register(&DeleteRoute{})
-}
-
 func (cmd *DeleteRoute) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

@@ -20,10 +20,6 @@ type DeleteSpace struct {
 	spaceReq  requirements.SpaceRequirement
 }
 
-func init() {
-	command_registry.Register(&DeleteSpace{})
-}
-
 func (cmd *DeleteSpace) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

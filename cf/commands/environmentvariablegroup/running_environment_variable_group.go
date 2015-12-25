@@ -16,10 +16,6 @@ type RunningEnvironmentVariableGroup struct {
 	environmentVariableGroupRepo environment_variable_groups.EnvironmentVariableGroupsRepository
 }
 
-func init() {
-	command_registry.Register(&RunningEnvironmentVariableGroup{})
-}
-
 func (cmd *RunningEnvironmentVariableGroup) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "running-environment-variable-group",

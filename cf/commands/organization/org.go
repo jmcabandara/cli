@@ -24,10 +24,6 @@ type ShowOrg struct {
 	pluginCall  bool
 }
 
-func init() {
-	command_registry.Register(&ShowOrg{})
-}
-
 func (cmd *ShowOrg) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["guid"] = &cliFlags.BoolFlag{Name: "guid", Usage: T("Retrieve and display the given org's guid.  All other output for the org is suppressed.")}

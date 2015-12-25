@@ -21,10 +21,6 @@ type Env struct {
 	appRepo applications.ApplicationRepository
 }
 
-func init() {
-	command_registry.Register(&Env{})
-}
-
 func (cmd *Env) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "env",

@@ -18,10 +18,6 @@ type DeleteServiceBroker struct {
 	repo   api.ServiceBrokerRepository
 }
 
-func init() {
-	command_registry.Register(&DeleteServiceBroker{})
-}
-
 func (cmd *DeleteServiceBroker) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

@@ -16,10 +16,6 @@ type UpdateServiceBroker struct {
 	repo   api.ServiceBrokerRepository
 }
 
-func init() {
-	command_registry.Register(&UpdateServiceBroker{})
-}
-
 func (cmd *UpdateServiceBroker) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "update-service-broker",

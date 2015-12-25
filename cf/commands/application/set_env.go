@@ -19,10 +19,6 @@ type SetEnv struct {
 	appReq  requirements.ApplicationRequirement
 }
 
-func init() {
-	command_registry.Register(&SetEnv{})
-}
-
 func (cmd *SetEnv) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:            "set-env",

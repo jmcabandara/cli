@@ -16,10 +16,6 @@ type ListFeatureFlags struct {
 	flagRepo feature_flags.FeatureFlagRepository
 }
 
-func init() {
-	command_registry.Register(&ListFeatureFlags{})
-}
-
 func (cmd *ListFeatureFlags) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "feature-flags",

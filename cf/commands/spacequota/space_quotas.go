@@ -20,10 +20,6 @@ type ListSpaceQuotas struct {
 	spaceQuotaRepo space_quotas.SpaceQuotaRepository
 }
 
-func init() {
-	command_registry.Register(&ListSpaceQuotas{})
-}
-
 func (cmd *ListSpaceQuotas) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "space-quotas",

@@ -19,10 +19,6 @@ type DeleteService struct {
 	serviceInstanceReq requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&DeleteService{})
-}
-
 func (cmd *DeleteService) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

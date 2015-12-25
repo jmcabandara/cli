@@ -21,10 +21,6 @@ type ListSpaces struct {
 	pluginCall  bool
 }
 
-func init() {
-	command_registry.Register(&ListSpaces{})
-}
-
 func (cmd *ListSpaces) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "spaces",

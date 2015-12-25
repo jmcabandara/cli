@@ -23,10 +23,6 @@ type ServiceAccess struct {
 	tokenRefresher authentication.TokenRefresher
 }
 
-func init() {
-	command_registry.Register(&ServiceAccess{})
-}
-
 func (cmd *ServiceAccess) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["b"] = &cliFlags.StringFlag{Name: "b", Usage: T("access for plans of a particular broker")}

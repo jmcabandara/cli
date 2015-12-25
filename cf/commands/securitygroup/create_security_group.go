@@ -21,10 +21,6 @@ type CreateSecurityGroup struct {
 	configRepo        core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&CreateSecurityGroup{})
-}
-
 func (cmd *CreateSecurityGroup) MetaData() command_registry.CommandMetadata {
 	primaryUsage := T("CF_NAME create-security-group SECURITY_GROUP PATH_TO_JSON_RULES_FILE")
 	secondaryUsage := T(`   The provided path can be an absolute or relative path to a file.  The file should have

@@ -18,10 +18,6 @@ type Plugins struct {
 	config plugin_config.PluginConfiguration
 }
 
-func init() {
-	command_registry.Register(&Plugins{})
-}
-
 func (cmd *Plugins) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["checksum"] = &cliFlags.BoolFlag{Name: "checksum", Usage: T("Compute and show the sha1 value of the plugin binary file")}

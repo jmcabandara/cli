@@ -20,10 +20,6 @@ type MapRoute struct {
 	routeCreator RouteCreator
 }
 
-func init() {
-	command_registry.Register(&MapRoute{})
-}
-
 func (cmd *MapRoute) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["n"] = &cliFlags.StringFlag{Name: "n", Usage: T("Hostname")}

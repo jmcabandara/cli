@@ -11,18 +11,14 @@ import (
 	"github.com/simonleung8/flags"
 )
 
-type bindToStagingGroup struct {
+type BindToStagingGroup struct {
 	ui                terminal.UI
 	configRepo        core_config.Reader
 	securityGroupRepo security_groups.SecurityGroupRepo
 	stagingGroupRepo  staging.StagingSecurityGroupsRepo
 }
 
-func init() {
-	command_registry.Register(&bindToStagingGroup{})
-}
-
-func (cmd *bindToStagingGroup) MetaData() command_registry.CommandMetadata {
+func (cmd *BindToStagingGroup) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "bind-staging-security-group",
 		Description: T("Bind a security group to the list of security groups to be used for staging applications"),
@@ -30,7 +26,7 @@ func (cmd *bindToStagingGroup) MetaData() command_registry.CommandMetadata {
 	}
 }
 
-func (cmd *bindToStagingGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
+func (cmd *BindToStagingGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
 	if len(fc.Args()) != 1 {
 		cmd.ui.Failed(T("Incorrect Usage. Requires an argument\n\n") + command_registry.Commands.CommandUsage("bind-staging-security-group"))
 	}
@@ -40,7 +36,7 @@ func (cmd *bindToStagingGroup) Requirements(requirementsFactory requirements.Fac
 	}, nil
 }
 
-func (cmd *bindToStagingGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
+func (cmd *BindToStagingGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.configRepo = deps.Config
 	cmd.securityGroupRepo = deps.RepoLocator.GetSecurityGroupRepository()
@@ -48,7 +44,7 @@ func (cmd *bindToStagingGroup) SetDependency(deps command_registry.Dependency, p
 	return cmd
 }
 
-func (cmd *bindToStagingGroup) Execute(context flags.FlagContext) {
+func (cmd *BindToStagingGroup) Execute(context flags.FlagContext) {
 	name := context.Args()[0]
 
 	securityGroup, err := cmd.securityGroupRepo.Read(name)

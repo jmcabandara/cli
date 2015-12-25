@@ -14,10 +14,6 @@ type Logout struct {
 	config core_config.ReadWriter
 }
 
-func init() {
-	command_registry.Register(&Logout{})
-}
-
 func (cmd *Logout) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "logout",

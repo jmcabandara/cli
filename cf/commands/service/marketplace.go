@@ -22,10 +22,6 @@ type MarketplaceServices struct {
 	serviceBuilder service_builder.ServiceBuilder
 }
 
-func init() {
-	command_registry.Register(&MarketplaceServices{})
-}
-
 func (cmd *MarketplaceServices) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["s"] = &cliFlags.StringFlag{Name: "s", Usage: T("Show plan details for a particular service offering")}

@@ -19,10 +19,6 @@ type UpdateBuildpack struct {
 	buildpackReq      requirements.BuildpackRequirement
 }
 
-func init() {
-	command_registry.Register(&UpdateBuildpack{})
-}
-
 func (cmd *UpdateBuildpack) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["i"] = &cliFlags.IntFlag{Name: "i", Usage: T("The order in which the buildpacks are checked during buildpack auto-detection")}

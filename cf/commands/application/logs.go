@@ -25,10 +25,6 @@ type Logs struct {
 	appReq   requirements.ApplicationRequirement
 }
 
-func init() {
-	command_registry.Register(&Logs{})
-}
-
 func (cmd *Logs) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["recent"] = &cliFlags.BoolFlag{Name: "recent", Usage: T("Dump recent logs instead of tailing")}

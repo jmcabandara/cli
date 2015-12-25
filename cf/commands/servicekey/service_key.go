@@ -23,10 +23,6 @@ type ServiceKey struct {
 	serviceInstanceRequirement requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&ServiceKey{})
-}
-
 func (cmd *ServiceKey) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["guid"] = &cliFlags.BoolFlag{Name: "guid", Usage: T("Retrieve and display the given service-key's guid.  All other output for the service is suppressed.")}

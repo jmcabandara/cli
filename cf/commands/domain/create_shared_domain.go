@@ -17,10 +17,6 @@ type CreateSharedDomain struct {
 	orgReq     requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&CreateSharedDomain{})
-}
-
 func (cmd *CreateSharedDomain) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "create-shared-domain",

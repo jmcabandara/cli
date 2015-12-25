@@ -19,10 +19,6 @@ type DisableServiceAccess struct {
 	tokenRefresher authentication.TokenRefresher
 }
 
-func init() {
-	command_registry.Register(&DisableServiceAccess{})
-}
-
 func (cmd *DisableServiceAccess) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["p"] = &cliFlags.StringFlag{Name: "p", Usage: T("Disable access to a specified service plan")}

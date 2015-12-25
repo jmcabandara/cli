@@ -23,10 +23,6 @@ type RepoPlugins struct {
 	pluginRepo plugin_repo.PluginRepo
 }
 
-func init() {
-	command_registry.Register(&RepoPlugins{})
-}
-
 func (cmd *RepoPlugins) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["r"] = &cliFlags.StringFlag{Name: "r", Usage: T("Repo Name - List plugins from just this repository")}

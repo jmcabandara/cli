@@ -23,10 +23,6 @@ type AddPluginRepo struct {
 	config core_config.ReadWriter
 }
 
-func init() {
-	command_registry.Register(&AddPluginRepo{})
-}
-
 func (cmd *AddPluginRepo) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "add-plugin-repo",

@@ -26,10 +26,6 @@ type UpdateService struct {
 	planBuilder plan_builder.PlanBuilder
 }
 
-func init() {
-	command_registry.Register(&UpdateService{})
-}
-
 func (cmd *UpdateService) MetaData() command_registry.CommandMetadata {
 	baseUsage := T("CF_NAME update-service SERVICE_INSTANCE [-p NEW_PLAN] [-c PARAMETERS_AS_JSON] [-t TAGS]")
 	paramsUsage := T(`   Optionally provide service-specific configuration parameters in a valid JSON object in-line.

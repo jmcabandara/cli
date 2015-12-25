@@ -18,10 +18,6 @@ type CreateUser struct {
 	userRepo api.UserRepository
 }
 
-func init() {
-	command_registry.Register(&CreateUser{})
-}
-
 func (cmd *CreateUser) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "create-user",

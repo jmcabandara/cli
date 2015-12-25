@@ -21,10 +21,6 @@ type UnsetOrgRole struct {
 	orgReq   requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&UnsetOrgRole{})
-}
-
 func (cmd *UnsetOrgRole) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "unset-org-role",

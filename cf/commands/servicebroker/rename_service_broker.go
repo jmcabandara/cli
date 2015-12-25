@@ -16,10 +16,6 @@ type RenameServiceBroker struct {
 	repo   api.ServiceBrokerRepository
 }
 
-func init() {
-	command_registry.Register(&RenameServiceBroker{})
-}
-
 func (cmd *RenameServiceBroker) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "rename-service-broker",

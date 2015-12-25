@@ -26,10 +26,6 @@ type Curl struct {
 	curlRepo api.CurlRepository
 }
 
-func init() {
-	command_registry.Register(&Curl{})
-}
-
 func (cmd *Curl) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["i"] = &cliFlags.BoolFlag{Name: "i", Usage: T("Include response headers in the output")}

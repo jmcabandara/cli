@@ -24,10 +24,6 @@ type UnbindSecurityGroup struct {
 	secBinder         sgbinder.SecurityGroupSpaceBinder
 }
 
-func init() {
-	command_registry.Register(&UnbindSecurityGroup{})
-}
-
 func (cmd *UnbindSecurityGroup) MetaData() command_registry.CommandMetadata {
 	primaryUsage := T("CF_NAME unbind-security-group SECURITY_GROUP ORG SPACE")
 	tipUsage := T("TIP: Changes will not apply to existing running applications until they are restarted.")

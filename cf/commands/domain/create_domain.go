@@ -17,10 +17,6 @@ type CreateDomain struct {
 	orgReq     requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&CreateDomain{})
-}
-
 func (cmd *CreateDomain) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "create-domain",

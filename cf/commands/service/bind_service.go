@@ -29,10 +29,6 @@ type BindService struct {
 	serviceInstanceReq requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&BindService{})
-}
-
 func (cmd *BindService) MetaData() command_registry.CommandMetadata {
 	baseUsage := T("CF_NAME bind-service APP_NAME SERVICE_INSTANCE [-c PARAMETERS_AS_JSON]")
 	paramsUsage := T(`   Optionally provide service-specific configuration parameters in a valid JSON object in-line:

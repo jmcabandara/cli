@@ -19,10 +19,6 @@ type SharePrivateDomain struct {
 	orgReq     requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&SharePrivateDomain{})
-}
-
 func (cmd *SharePrivateDomain) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "share-private-domain",

@@ -49,10 +49,6 @@ type Push struct {
 	appfiles      app_files.AppFiles
 }
 
-func init() {
-	command_registry.Register(&Push{})
-}
-
 func (cmd *Push) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["b"] = &cliFlags.StringFlag{Name: "b", Usage: T("Custom buildpack by name (e.g. my-buildpack) or Git URL (e.g. 'https://github.com/cloudfoundry/java-buildpack.git') or Git URL with a branch or tag (e.g. 'https://github.com/cloudfoundry/java-buildpack.git#v3.3.0' for 'v3.3.0' tag). To use built-in buildpacks only, specify 'default' or 'null'")}

@@ -21,10 +21,6 @@ type DeleteApp struct {
 	appReq    requirements.ApplicationRequirement
 }
 
-func init() {
-	command_registry.Register(&DeleteApp{})
-}
-
 func (cmd *DeleteApp) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

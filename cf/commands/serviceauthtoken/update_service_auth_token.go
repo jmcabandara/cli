@@ -16,10 +16,6 @@ type UpdateServiceAuthTokenFields struct {
 	authTokenRepo api.ServiceAuthTokenRepository
 }
 
-func init() {
-	command_registry.Register(&UpdateServiceAuthTokenFields{})
-}
-
 func (cmd *UpdateServiceAuthTokenFields) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "update-service-auth-token",

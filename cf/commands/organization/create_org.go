@@ -26,10 +26,6 @@ type CreateOrg struct {
 	flagRepo      feature_flags.FeatureFlagRepository
 }
 
-func init() {
-	command_registry.Register(&CreateOrg{})
-}
-
 func (cmd *CreateOrg) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["q"] = &cliFlags.StringFlag{Name: "q", Usage: T("Quota to assign to the newly created org (excluding this option results in assignment of default quota)")}

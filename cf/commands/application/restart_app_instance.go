@@ -19,10 +19,6 @@ type RestartAppInstance struct {
 	appInstancesRepo app_instances.AppInstancesRepository
 }
 
-func init() {
-	command_registry.Register(&RestartAppInstance{})
-}
-
 func (cmd *RestartAppInstance) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "restart-app-instance",

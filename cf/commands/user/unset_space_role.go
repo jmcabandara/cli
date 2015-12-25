@@ -23,10 +23,6 @@ type UnsetSpaceRole struct {
 	orgReq    requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&UnsetSpaceRole{})
-}
-
 func (cmd *UnsetSpaceRole) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "unset-space-role",

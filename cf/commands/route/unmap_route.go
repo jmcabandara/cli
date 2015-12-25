@@ -19,10 +19,6 @@ type UnmapRoute struct {
 	domainReq requirements.DomainRequirement
 }
 
-func init() {
-	command_registry.Register(&UnmapRoute{})
-}
-
 func (cmd *UnmapRoute) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["n"] = &cliFlags.StringFlag{Name: "n", Usage: T("Hostname")}

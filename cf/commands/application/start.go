@@ -57,10 +57,6 @@ type Start struct {
 	PingerThrottle             time.Duration
 }
 
-func init() {
-	command_registry.Register(&Start{})
-}
-
 func (cmd *Start) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "start",

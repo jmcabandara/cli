@@ -19,10 +19,6 @@ type DeleteQuota struct {
 	orgReq    requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&DeleteQuota{})
-}
-
 func (cmd *DeleteQuota) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

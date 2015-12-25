@@ -22,10 +22,6 @@ type Api struct {
 	config       core_config.ReadWriter
 }
 
-func init() {
-	command_registry.Register(Api{})
-}
-
 func (cmd Api) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["unset"] = &cliFlags.BoolFlag{Name: "unset", Usage: T("Remove all api endpoint targeting")}

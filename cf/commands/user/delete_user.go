@@ -18,10 +18,6 @@ type DeleteUser struct {
 	userRepo api.UserRepository
 }
 
-func init() {
-	command_registry.Register(&DeleteUser{})
-}
-
 func (cmd *DeleteUser) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

@@ -19,10 +19,6 @@ type DeleteSpaceQuota struct {
 	spaceQuotaRepo space_quotas.SpaceQuotaRepository
 }
 
-func init() {
-	command_registry.Register(&DeleteSpaceQuota{})
-}
-
 func (cmd *DeleteSpaceQuota) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force delete (do not prompt for confirmation)")}

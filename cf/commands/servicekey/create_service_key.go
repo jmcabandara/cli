@@ -22,10 +22,6 @@ type CreateServiceKey struct {
 	serviceInstanceRequirement requirements.ServiceInstanceRequirement
 }
 
-func init() {
-	command_registry.Register(&CreateServiceKey{})
-}
-
 func (cmd *CreateServiceKey) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["c"] = &cliFlags.StringFlag{Name: "c", Usage: T("Valid JSON object containing service-specific configuration parameters, provided either in-line or in a file. For a list of supported configuration parameters, see documentation for the particular service offering.")}

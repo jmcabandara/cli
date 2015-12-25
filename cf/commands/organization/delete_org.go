@@ -20,10 +20,6 @@ type DeleteOrg struct {
 	orgReq  requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&DeleteOrg{})
-}
-
 func (cmd *DeleteOrg) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

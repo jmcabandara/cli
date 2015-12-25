@@ -17,10 +17,6 @@ type CreateServiceAuthTokenFields struct {
 	authTokenRepo api.ServiceAuthTokenRepository
 }
 
-func init() {
-	command_registry.Register(&CreateServiceAuthTokenFields{})
-}
-
 func (cmd *CreateServiceAuthTokenFields) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "create-service-auth-token",

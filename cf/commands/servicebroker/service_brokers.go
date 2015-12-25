@@ -26,10 +26,6 @@ type serviceBrokerRow struct {
 	url  string
 }
 
-func init() {
-	command_registry.Register(&ListServiceBrokers{})
-}
-
 func (cmd *ListServiceBrokers) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "service-brokers",

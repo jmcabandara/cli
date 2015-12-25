@@ -16,10 +16,6 @@ type CreateServiceBroker struct {
 	serviceBrokerRepo api.ServiceBrokerRepository
 }
 
-func init() {
-	command_registry.Register(&CreateServiceBroker{})
-}
-
 func (cmd *CreateServiceBroker) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "create-service-broker",

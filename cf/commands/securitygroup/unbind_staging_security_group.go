@@ -14,18 +14,14 @@ import (
 	"github.com/simonleung8/flags"
 )
 
-type unbindFromStagingGroup struct {
+type UnbindFromStagingGroup struct {
 	ui                terminal.UI
 	configRepo        core_config.Reader
 	securityGroupRepo security_groups.SecurityGroupRepo
 	stagingGroupRepo  staging.StagingSecurityGroupsRepo
 }
 
-func init() {
-	command_registry.Register(&unbindFromStagingGroup{})
-}
-
-func (cmd *unbindFromStagingGroup) MetaData() command_registry.CommandMetadata {
+func (cmd *UnbindFromStagingGroup) MetaData() command_registry.CommandMetadata {
 	primaryUsage := T("CF_NAME unbind-staging-security-group SECURITY_GROUP")
 	tipUsage := T("TIP: Changes will not apply to existing running applications until they are restarted.")
 	return command_registry.CommandMetadata{
@@ -35,7 +31,7 @@ func (cmd *unbindFromStagingGroup) MetaData() command_registry.CommandMetadata {
 	}
 }
 
-func (cmd *unbindFromStagingGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
+func (cmd *UnbindFromStagingGroup) Requirements(requirementsFactory requirements.Factory, fc flags.FlagContext) ([]requirements.Requirement, error) {
 	if len(fc.Args()) != 1 {
 		cmd.ui.Failed(T("Incorrect Usage. Requires an argument\n\n") + command_registry.Commands.CommandUsage("unbind-staging-security-group"))
 	}
@@ -45,7 +41,7 @@ func (cmd *unbindFromStagingGroup) Requirements(requirementsFactory requirements
 	}, nil
 }
 
-func (cmd *unbindFromStagingGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
+func (cmd *UnbindFromStagingGroup) SetDependency(deps command_registry.Dependency, pluginCall bool) command_registry.Command {
 	cmd.ui = deps.Ui
 	cmd.configRepo = deps.Config
 	cmd.securityGroupRepo = deps.RepoLocator.GetSecurityGroupRepository()
@@ -53,7 +49,7 @@ func (cmd *unbindFromStagingGroup) SetDependency(deps command_registry.Dependenc
 	return cmd
 }
 
-func (cmd *unbindFromStagingGroup) Execute(context flags.FlagContext) {
+func (cmd *UnbindFromStagingGroup) Execute(context flags.FlagContext) {
 	name := context.Args()[0]
 
 	cmd.ui.Say(T("Unbinding security group {{.security_group}} from defaults for staging as {{.username}}",

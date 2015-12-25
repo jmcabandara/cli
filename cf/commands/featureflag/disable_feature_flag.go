@@ -16,10 +16,6 @@ type DisableFeatureFlag struct {
 	flagRepo feature_flags.FeatureFlagRepository
 }
 
-func init() {
-	command_registry.Register(&DisableFeatureFlag{})
-}
-
 func (cmd *DisableFeatureFlag) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "disable-feature-flag",

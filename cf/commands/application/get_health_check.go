@@ -18,10 +18,6 @@ type GetHealthCheck struct {
 	appRepo applications.ApplicationRepository
 }
 
-func init() {
-	command_registry.Register(&GetHealthCheck{})
-}
-
 func (cmd *GetHealthCheck) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "get-health-check",

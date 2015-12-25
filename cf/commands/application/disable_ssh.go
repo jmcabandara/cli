@@ -20,10 +20,6 @@ type DisableSSH struct {
 	appRepo applications.ApplicationRepository
 }
 
-func init() {
-	command_registry.Register(&DisableSSH{})
-}
-
 func (cmd *DisableSSH) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "disable-ssh",

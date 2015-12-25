@@ -23,10 +23,6 @@ type Target struct {
 	spaceRepo spaces.SpaceRepository
 }
 
-func init() {
-	command_registry.Register(&Target{})
-}
-
 func (cmd *Target) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["o"] = &cliFlags.StringFlag{Name: "o", Usage: T("organization")}

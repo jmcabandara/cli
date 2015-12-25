@@ -16,10 +16,6 @@ type ListServiceAuthTokens struct {
 	authTokenRepo api.ServiceAuthTokenRepository
 }
 
-func init() {
-	command_registry.Register(&ListServiceAuthTokens{})
-}
-
 func (cmd *ListServiceAuthTokens) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "service-auth-tokens",

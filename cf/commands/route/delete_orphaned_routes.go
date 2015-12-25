@@ -18,10 +18,6 @@ type DeleteOrphanedRoutes struct {
 	config    core_config.Reader
 }
 
-func init() {
-	command_registry.Register(&DeleteOrphanedRoutes{})
-}
-
 func (cmd *DeleteOrphanedRoutes) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

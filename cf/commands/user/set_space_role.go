@@ -29,10 +29,6 @@ type SetSpaceRole struct {
 	orgReq    requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&SetSpaceRole{})
-}
-
 func (cmd *SetSpaceRole) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "set-space-role",

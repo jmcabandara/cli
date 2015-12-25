@@ -17,10 +17,6 @@ type RenameOrg struct {
 	orgReq  requirements.OrganizationRequirement
 }
 
-func init() {
-	command_registry.Register(&RenameOrg{})
-}
-
 func (cmd *RenameOrg) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "rename-org",

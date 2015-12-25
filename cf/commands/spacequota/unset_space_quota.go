@@ -18,10 +18,6 @@ type UnsetSpaceQuota struct {
 	spaceRepo spaces.SpaceRepository
 }
 
-func init() {
-	command_registry.Register(&UnsetSpaceQuota{})
-}
-
 func (cmd *UnsetSpaceQuota) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "unset-space-quota",

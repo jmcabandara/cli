@@ -17,10 +17,6 @@ type Events struct {
 	eventsRepo app_events.AppEventsRepository
 }
 
-func init() {
-	command_registry.Register(&Events{})
-}
-
 func (cmd *Events) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "events",

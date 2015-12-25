@@ -17,10 +17,6 @@ type PurgeServiceInstance struct {
 	serviceRepo api.ServiceRepository
 }
 
-func init() {
-	command_registry.Register(&PurgeServiceInstance{})
-}
-
 func (cmd *PurgeServiceInstance) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["f"] = &cliFlags.BoolFlag{Name: "f", Usage: T("Force deletion without confirmation")}

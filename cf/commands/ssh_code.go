@@ -36,10 +36,6 @@ type OneTimeSSHCode struct {
 
 var ErrNoRedirects = errors.New("No redirects")
 
-func init() {
-	command_registry.Register(OneTimeSSHCode{})
-}
-
 func (cmd OneTimeSSHCode) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "ssh-code",

@@ -17,10 +17,6 @@ type RemovePluginRepo struct {
 	config core_config.ReadWriter
 }
 
-func init() {
-	command_registry.Register(&RemovePluginRepo{})
-}
-
 func (cmd *RemovePluginRepo) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "remove-plugin-repo",

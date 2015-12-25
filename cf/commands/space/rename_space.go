@@ -17,10 +17,6 @@ type RenameSpace struct {
 	spaceReq  requirements.SpaceRequirement
 }
 
-func init() {
-	command_registry.Register(&RenameSpace{})
-}
-
 func (cmd *RenameSpace) MetaData() command_registry.CommandMetadata {
 	return command_registry.CommandMetadata{
 		Name:        "rename-space",
