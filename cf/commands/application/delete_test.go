@@ -4,6 +4,7 @@ import (
 	testApplication "github.com/cloudfoundry/cli/cf/api/applications/fakes"
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/errors"
 	"github.com/cloudfoundry/cli/cf/models"
@@ -37,6 +38,7 @@ var _ = Describe("delete app command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.DeleteApp{})
 		app = models.Application{}
 		app.Name = "app-to-delete"
 		app.Guid = "app-to-delete-guid"
@@ -47,6 +49,10 @@ var _ = Describe("delete app command", func() {
 		requirementsFactory = &testreq.FakeReqFactory{}
 
 		configRepo = testconfig.NewRepositoryWithDefaults()
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("delete")
 	})
 
 	runCommand := func(args ...string) bool {

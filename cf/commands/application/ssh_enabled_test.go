@@ -2,6 +2,7 @@ package application_test
 
 import (
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -14,7 +15,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("disable-ssh command", func() {
+var _ = Describe("ssh-enabled command", func() {
 	var (
 		ui                  *testterm.FakeUI
 		requirementsFactory *testreq.FakeReqFactory
@@ -23,9 +24,14 @@ var _ = Describe("disable-ssh command", func() {
 	)
 
 	BeforeEach(func() {
+		command_registry.Register(&application.SSHEnabled{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("ssh-enabled")
 	})
 
 	updateCommandDependency := func(pluginCall bool) {

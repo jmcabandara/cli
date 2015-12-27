@@ -3,6 +3,7 @@ package application_test
 import (
 	testApplication "github.com/cloudfoundry/cli/cf/api/applications/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -15,7 +16,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("set-health-check command", func() {
+var _ = Describe("get-health-check command", func() {
 	var (
 		ui                  *testterm.FakeUI
 		requirementsFactory *testreq.FakeReqFactory
@@ -25,10 +26,15 @@ var _ = Describe("set-health-check command", func() {
 	)
 
 	BeforeEach(func() {
+		command_registry.Register(&application.GetHealthCheck{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{}
 		appRepo = &testApplication.FakeApplicationRepository{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("get-health-check")
 	})
 
 	updateCommandDependency := func(pluginCall bool) {

@@ -3,6 +3,7 @@ package environmentvariablegroup_test
 import (
 	test_environmentVariableGroups "github.com/cloudfoundry/cli/cf/api/environment_variable_groups/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/environmentvariablegroup"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -31,10 +32,15 @@ var _ = Describe("staging-environment-variable-group command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&environmentvariablegroup.StagingEnvironmentVariableGroup{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true}
 		environmentVariableGroupRepo = &test_environmentVariableGroups.FakeEnvironmentVariableGroupsRepository{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("staging-environment-variable-group")
 	})
 
 	runCommand := func(args ...string) bool {

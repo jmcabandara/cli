@@ -5,6 +5,7 @@ import (
 
 	testApplication "github.com/cloudfoundry/cli/cf/api/applications/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -27,10 +28,15 @@ var _ = Describe("enable-ssh command", func() {
 	)
 
 	BeforeEach(func() {
+		command_registry.Register(&application.EnableSSH{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{}
 		appRepo = &testApplication.FakeApplicationRepository{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("enable-ssh")
 	})
 
 	updateCommandDependency := func(pluginCall bool) {

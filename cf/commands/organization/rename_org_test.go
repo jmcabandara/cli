@@ -3,6 +3,7 @@ package organization_test
 import (
 	test_org "github.com/cloudfoundry/cli/cf/api/organizations/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/organization"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -32,10 +33,15 @@ var _ = Describe("rename-org command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&organization.RenameOrg{})
 		requirementsFactory = &testreq.FakeReqFactory{}
 		orgRepo = &test_org.FakeOrganizationRepository{}
 		ui = new(testterm.FakeUI)
 		configRepo = testconfig.NewRepositoryWithDefaults()
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("rename-org")
 	})
 
 	var callRenameOrg = func(args []string) bool {

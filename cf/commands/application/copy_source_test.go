@@ -5,6 +5,7 @@ import (
 	testCopyApplication "github.com/cloudfoundry/cli/cf/api/copy_application_source/fakes"
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
 	testorg "github.com/cloudfoundry/cli/cf/api/organizations/fakes"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	appCmdFakes "github.com/cloudfoundry/cli/cf/commands/application/fakes"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -33,7 +34,6 @@ var _ = Describe("CopySource", func() {
 		spaceRepo           *testapi.FakeSpaceRepository
 		orgRepo             *testorg.FakeOrganizationRepository
 		appRestarter        *appCmdFakes.FakeApplicationRestarter
-		OriginalCommand     command_registry.Command
 		deps                command_registry.Dependency
 	)
 
@@ -53,6 +53,7 @@ var _ = Describe("CopySource", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.CopySource{})
 		ui = &testterm.FakeUI{}
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true, TargetedSpaceSuccess: true}
 		authRepo = &testapi.FakeAuthenticationRepository{}
@@ -62,19 +63,14 @@ var _ = Describe("CopySource", func() {
 		orgRepo = &testorg.FakeOrganizationRepository{}
 		config = testconfig.NewRepositoryWithDefaults()
 
-		//save original command and restore later
-		OriginalCommand = command_registry.Commands.FindCommand("restart")
-
 		appRestarter = &appCmdFakes.FakeApplicationRestarter{}
-		//setup fakes to correctly interact with command_registry
-		appRestarter.SetDependencyStub = func(_ command_registry.Dependency, _ bool) command_registry.Command {
-			return appRestarter
-		}
+		appRestarter.SetDependencyReturns(appRestarter)
 		appRestarter.MetaDataReturns(command_registry.CommandMetadata{Name: "restart"})
 	})
 
 	AfterEach(func() {
-		command_registry.Register(OriginalCommand)
+		command_registry.Commands.RemoveCommand("restart")
+		command_registry.Commands.RemoveCommand("copy-source")
 	})
 
 	runCommand := func(args ...string) bool {

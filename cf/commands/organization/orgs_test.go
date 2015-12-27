@@ -3,6 +3,7 @@ package organization_test
 import (
 	test_org "github.com/cloudfoundry/cli/cf/api/organizations/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/organization"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	"github.com/cloudfoundry/cli/plugin/models"
@@ -37,12 +38,17 @@ var _ = Describe("org command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&organization.ListOrgs{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		orgRepo = &test_org.FakeOrganizationRepository{}
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true}
 
 		deps = command_registry.NewDependency()
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("orgs")
 	})
 
 	Describe("requirements", func() {

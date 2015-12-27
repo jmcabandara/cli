@@ -3,6 +3,7 @@ package application_test
 import (
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	"github.com/cloudfoundry/cli/plugin/models"
@@ -33,6 +34,7 @@ var _ = Describe("list-apps command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.ListApps{})
 		ui = &testterm.FakeUI{}
 		appSummaryRepo = &testapi.FakeAppSummaryRepo{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
@@ -87,6 +89,10 @@ var _ = Describe("list-apps command", func() {
 		appSummaryRepo.GetSummariesInCurrentSpaceApps = []models.Application{app, app2}
 
 		deps = command_registry.NewDependency()
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("apps")
 	})
 
 	runCommand := func(args ...string) bool {

@@ -3,6 +3,7 @@ package domain_test
 import (
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/domain"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/errors"
 	"github.com/cloudfoundry/cli/cf/models"
@@ -33,10 +34,15 @@ var _ = Describe("delete-shared-domain command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&domain.DeleteSharedDomain{})
 		ui = &testterm.FakeUI{}
 		domainRepo = &testapi.FakeDomainRepository{}
 		requirementsFactory = &testreq.FakeReqFactory{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("delete-shared-domain")
 	})
 
 	runCommand := func(args ...string) bool {

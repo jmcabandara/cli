@@ -5,6 +5,7 @@ import (
 
 	fakeflag "github.com/cloudfoundry/cli/cf/api/feature_flags/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/featureflag"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -33,10 +34,15 @@ var _ = Describe("feature-flags command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&featureflag.ListFeatureFlags{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true}
 		flagRepo = &fakeflag.FakeFeatureFlagRepository{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("feature-flags")
 	})
 
 	runCommand := func(args ...string) bool {

@@ -5,6 +5,7 @@ import (
 
 	testApplication "github.com/cloudfoundry/cli/cf/api/applications/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -27,10 +28,15 @@ var _ = Describe("set-health-check command", func() {
 	)
 
 	BeforeEach(func() {
+		command_registry.Register(&application.SetHealthCheck{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{}
 		appRepo = &testApplication.FakeApplicationRepository{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("set-health-check")
 	})
 
 	updateCommandDependency := func(pluginCall bool) {

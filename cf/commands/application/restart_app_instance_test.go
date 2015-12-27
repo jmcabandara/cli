@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	testApplication "github.com/cloudfoundry/cli/cf/api/app_instances/fakes"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -23,15 +24,16 @@ var _ = Describe("restart-app-instance", func() {
 		config              core_config.Repository
 		appInstancesRepo    *testApplication.FakeAppInstancesRepository
 		requirementsFactory *testreq.FakeReqFactory
-		application         models.Application
+		appModel            models.Application
 		deps                command_registry.Dependency
 	)
 
 	BeforeEach(func() {
-		application = models.Application{}
-		application.Name = "my-app"
-		application.Guid = "my-app-guid"
-		application.InstanceCount = 1
+		command_registry.Register(&application.RestartAppInstance{})
+		appModel = models.Application{}
+		appModel.Name = "my-app"
+		appModel.Guid = "my-app-guid"
+		appModel.InstanceCount = 1
 
 		ui = &testterm.FakeUI{}
 		appInstancesRepo = &testApplication.FakeAppInstancesRepository{}
@@ -39,8 +41,12 @@ var _ = Describe("restart-app-instance", func() {
 		requirementsFactory = &testreq.FakeReqFactory{
 			LoginSuccess:         true,
 			TargetedSpaceSuccess: true,
-			Application:          application,
+			Application:          appModel,
 		}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("restart-app-instance")
 	})
 
 	updateCommandDependency := func(pluginCall bool) {
@@ -77,7 +83,7 @@ var _ = Describe("restart-app-instance", func() {
 			runCommand("my-app", "0")
 
 			app_guid, instance := appInstancesRepo.DeleteInstanceArgsForCall(0)
-			Expect(app_guid).To(Equal(application.Guid))
+			Expect(app_guid).To(Equal(appModel.Guid))
 			Expect(instance).To(Equal(0))
 			Expect(ui.Outputs).To(ContainSubstrings(
 				[]string{"Restarting instance 0 of application my-app as my-user"},
@@ -93,7 +99,7 @@ var _ = Describe("restart-app-instance", func() {
 				runCommand("my-app", "0")
 
 				app_guid, instance := appInstancesRepo.DeleteInstanceArgsForCall(0)
-				Expect(app_guid).To(Equal(application.Guid))
+				Expect(app_guid).To(Equal(appModel.Guid))
 				Expect(instance).To(Equal(0))
 
 				Expect(ui.Outputs).To(ContainSubstrings(

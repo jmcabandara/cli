@@ -15,7 +15,7 @@ import (
 	testterm "github.com/cloudfoundry/cli/testhelpers/terminal"
 	"github.com/cloudfoundry/loggregatorlib/logmessage"
 
-	. "github.com/cloudfoundry/cli/cf/commands/application"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	. "github.com/cloudfoundry/cli/testhelpers/matchers"
 	. "github.com/onsi/ginkgo"
@@ -39,6 +39,7 @@ var _ = Describe("logs command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Logs{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		logsRepo = &testapi.FakeLogsRepository{}
@@ -185,25 +186,25 @@ var _ = Describe("logs command", func() {
 			Context("when the message comes", func() {
 				It("include the instance index", func() {
 					msg := testlogs.NewLogMessage("Hello World!", app.Guid, "DEA", "4", logmessage.LogMessage_OUT, date)
-					Expect(terminal.Decolorize(LogMessageOutput(msg, time.UTC))).To(Equal("2014-04-04T11:39:20.00+0000 [DEA/4]      OUT Hello World!"))
+					Expect(terminal.Decolorize(application.LogMessageOutput(msg, time.UTC))).To(Equal("2014-04-04T11:39:20.00+0000 [DEA/4]      OUT Hello World!"))
 				})
 
 				It("doesn't include the instance index if sourceID is empty", func() {
 					msg := testlogs.NewLogMessage("Hello World!", app.Guid, "DEA", "", logmessage.LogMessage_OUT, date)
-					Expect(terminal.Decolorize(LogMessageOutput(msg, time.UTC))).To(Equal("2014-04-04T11:39:20.00+0000 [DEA]        OUT Hello World!"))
+					Expect(terminal.Decolorize(application.LogMessageOutput(msg, time.UTC))).To(Equal("2014-04-04T11:39:20.00+0000 [DEA]        OUT Hello World!"))
 				})
 			})
 
 			Context("when the message was written to stderr", func() {
 				It("shows the log type as 'ERR'", func() {
 					msg := testlogs.NewLogMessage("Hello World!", app.Guid, "DEA", "4", logmessage.LogMessage_ERR, date)
-					Expect(terminal.Decolorize(LogMessageOutput(msg, time.UTC))).To(Equal("2014-04-04T11:39:20.00+0000 [DEA/4]      ERR Hello World!"))
+					Expect(terminal.Decolorize(application.LogMessageOutput(msg, time.UTC))).To(Equal("2014-04-04T11:39:20.00+0000 [DEA/4]      ERR Hello World!"))
 				})
 			})
 
 			It("formats the time in the given time zone", func() {
 				msg := testlogs.NewLogMessage("Hello World!", app.Guid, "DEA", "4", logmessage.LogMessage_ERR, date)
-				Expect(terminal.Decolorize(LogMessageOutput(msg, time.FixedZone("the-zone", 3*60*60)))).To(Equal("2014-04-04T14:39:20.00+0300 [DEA/4]      ERR Hello World!"))
+				Expect(terminal.Decolorize(application.LogMessageOutput(msg, time.FixedZone("the-zone", 3*60*60)))).To(Equal("2014-04-04T14:39:20.00+0300 [DEA/4]      ERR Hello World!"))
 			})
 		})
 	})

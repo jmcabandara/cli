@@ -5,6 +5,7 @@ import (
 
 	"github.com/cloudfoundry/cli/cf"
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
+	"github.com/cloudfoundry/cli/cf/commands/buildpack"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
 	testreq "github.com/cloudfoundry/cli/testhelpers/requirements"
 	testterm "github.com/cloudfoundry/cli/testhelpers/terminal"
@@ -32,10 +33,15 @@ var _ = Describe("create-buildpack command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&buildpack.CreateBuildpack{})
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true}
 		repo = &testapi.FakeBuildpackRepository{}
 		bitsRepo = &testapi.FakeBuildpackBitsRepository{}
 		ui = &testterm.FakeUI{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("create-buildpacks")
 	})
 
 	It("fails requirements when the user is not logged in", func() {

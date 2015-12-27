@@ -3,6 +3,7 @@ package buildpack_test
 import (
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/buildpack"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
 	testreq "github.com/cloudfoundry/cli/testhelpers/requirements"
@@ -28,9 +29,14 @@ var _ = Describe("ListBuildpacks", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&buildpack.ListBuildpacks{})
 		ui = &testterm.FakeUI{}
 		buildpackRepo = &testapi.FakeBuildpackRepository{}
 		requirementsFactory = &testreq.FakeReqFactory{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("buildpacks")
 	})
 
 	runCommand := func(args ...string) bool {

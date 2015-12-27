@@ -3,6 +3,7 @@ package application_test
 import (
 	testApplication "github.com/cloudfoundry/cli/cf/api/applications/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/errors"
 	"github.com/cloudfoundry/cli/cf/models"
@@ -34,6 +35,7 @@ var _ = Describe("env command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Env{})
 		ui = &testterm.FakeUI{}
 
 		app = models.Application{}
@@ -43,6 +45,10 @@ var _ = Describe("env command", func() {
 
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true, TargetedSpaceSuccess: true}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("env")
 	})
 
 	runCommand := func(args ...string) bool {

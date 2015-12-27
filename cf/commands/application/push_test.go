@@ -12,7 +12,9 @@ import (
 	testStacks "github.com/cloudfoundry/cli/cf/api/stacks/fakes"
 	fakeappfiles "github.com/cloudfoundry/cli/cf/app_files/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	appCmdFakes "github.com/cloudfoundry/cli/cf/commands/application/fakes"
+	"github.com/cloudfoundry/cli/cf/commands/service"
 	serviceCmdFakes "github.com/cloudfoundry/cli/cf/commands/service/fakes"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/errors"
@@ -34,27 +36,24 @@ import (
 
 var _ = Describe("Push Command", func() {
 	var (
-		ui                         *testterm.FakeUI
-		configRepo                 core_config.Repository
-		manifestRepo               *testmanifest.FakeManifestRepository
-		starter                    *appCmdFakes.FakeApplicationStarter
-		stopper                    *appCmdFakes.FakeApplicationStopper
-		serviceBinder              *serviceCmdFakes.FakeAppBinder
-		appRepo                    *testApplication.FakeApplicationRepository
-		domainRepo                 *testapi.FakeDomainRepository
-		routeRepo                  *testapi.FakeRouteRepository
-		stackRepo                  *testStacks.FakeStackRepository
-		serviceRepo                *testapi.FakeServiceRepository
-		wordGenerator              *testwords.FakeWordGenerator
-		requirementsFactory        *testreq.FakeReqFactory
-		authRepo                   *testapi.FakeAuthenticationRepository
-		actor                      *fakeactors.FakePushActor
-		appfiles                   *fakeappfiles.FakeAppFiles
-		zipper                     *fakeappfiles.FakeZipper
-		OriginalCommandStart       command_registry.Command
-		OriginalCommandStop        command_registry.Command
-		OriginalCommandServiceBind command_registry.Command
-		deps                       command_registry.Dependency
+		ui                  *testterm.FakeUI
+		configRepo          core_config.Repository
+		manifestRepo        *testmanifest.FakeManifestRepository
+		starter             *appCmdFakes.FakeApplicationStarter
+		stopper             *appCmdFakes.FakeApplicationStopper
+		serviceBinder       *serviceCmdFakes.FakeAppBinder
+		appRepo             *testApplication.FakeApplicationRepository
+		domainRepo          *testapi.FakeDomainRepository
+		routeRepo           *testapi.FakeRouteRepository
+		stackRepo           *testStacks.FakeStackRepository
+		serviceRepo         *testapi.FakeServiceRepository
+		wordGenerator       *testwords.FakeWordGenerator
+		requirementsFactory *testreq.FakeReqFactory
+		authRepo            *testapi.FakeAuthenticationRepository
+		actor               *fakeactors.FakePushActor
+		appfiles            *fakeappfiles.FakeAppFiles
+		zipper              *fakeappfiles.FakeZipper
+		deps                command_registry.Dependency
 	)
 
 	updateCommandDependency := func(pluginCall bool) {
@@ -81,6 +80,11 @@ var _ = Describe("Push Command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Push{})
+		command_registry.Register(&application.Start{})
+		command_registry.Register(&application.Stop{})
+		command_registry.Register(&service.BindService{})
+
 		manifestRepo = &testmanifest.FakeManifestRepository{}
 
 		starter = &appCmdFakes.FakeApplicationStarter{}
@@ -103,11 +107,6 @@ var _ = Describe("Push Command", func() {
 		domainRepo = &testapi.FakeDomainRepository{}
 		sharedDomain := maker.NewSharedDomainFields(maker.Overrides{"name": "foo.cf-app.com", "guid": "foo-domain-guid"})
 		domainRepo.ListDomainsForOrgDomains = []models.DomainFields{sharedDomain}
-
-		//save original command dependences and restore later
-		OriginalCommandStart = command_registry.Commands.FindCommand("start")
-		OriginalCommandStop = command_registry.Commands.FindCommand("stop")
-		OriginalCommandServiceBind = command_registry.Commands.FindCommand("bind-service")
 
 		routeRepo = &testapi.FakeRouteRepository{}
 		routeRepo.CreateStub = func(host string, domain models.DomainFields, path string) (models.Route, error) {
@@ -147,9 +146,10 @@ var _ = Describe("Push Command", func() {
 	})
 
 	AfterEach(func() {
-		command_registry.Register(OriginalCommandStart)
-		command_registry.Register(OriginalCommandStop)
-		command_registry.Register(OriginalCommandServiceBind)
+		command_registry.Commands.RemoveCommand("push")
+		command_registry.Commands.RemoveCommand("start")
+		command_registry.Commands.RemoveCommand("stop")
+		command_registry.Commands.RemoveCommand("bind-service")
 	})
 
 	callPush := func(args ...string) bool {

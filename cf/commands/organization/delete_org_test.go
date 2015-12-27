@@ -1,6 +1,7 @@
 package organization_test
 
 import (
+	"github.com/cloudfoundry/cli/cf/commands/organization"
 	"github.com/cloudfoundry/cli/cf/errors"
 
 	test_org "github.com/cloudfoundry/cli/cf/api/organizations/fakes"
@@ -35,6 +36,7 @@ var _ = Describe("delete-org command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&organization.DeleteOrg{})
 		ui = &testterm.FakeUI{
 			Inputs: []string{"y"},
 		}
@@ -48,6 +50,10 @@ var _ = Describe("delete-org command", func() {
 
 		orgRepo.ListOrgsReturns([]models.Organization{org}, nil)
 		orgRepo.FindByNameReturns(org, nil)
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("delete-org")
 	})
 
 	runCommand := func(args ...string) bool {

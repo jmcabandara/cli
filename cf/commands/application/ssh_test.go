@@ -8,6 +8,7 @@ import (
 
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	cmdFakes "github.com/cloudfoundry/cli/cf/commands/fakes"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
@@ -28,8 +29,7 @@ var _ = Describe("SSH command", func() {
 	var (
 		ui *testterm.FakeUI
 
-		sshCodeGetter         *cmdFakes.FakeSSHCodeGetter
-		originalSSHCodeGetter command_registry.Command
+		sshCodeGetter *cmdFakes.FakeSSHCodeGetter
 
 		requirementsFactory *testreq.FakeReqFactory
 		configRepo          core_config.Repository
@@ -40,13 +40,11 @@ var _ = Describe("SSH command", func() {
 	)
 
 	BeforeEach(func() {
+		command_registry.Register(&application.SSH{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{}
 		deps.Gateways = make(map[string]net.Gateway)
-
-		//save original command and restore later
-		originalSSHCodeGetter = command_registry.Commands.FindCommand("ssh-code")
 
 		sshCodeGetter = &cmdFakes.FakeSSHCodeGetter{}
 
@@ -58,8 +56,8 @@ var _ = Describe("SSH command", func() {
 	})
 
 	AfterEach(func() {
-		//restore original command
-		command_registry.Register(originalSSHCodeGetter)
+		command_registry.Commands.RemoveCommand("ssh")
+		command_registry.Commands.RemoveCommand("ssh-code")
 	})
 
 	updateCommandDependency := func(pluginCall bool) {

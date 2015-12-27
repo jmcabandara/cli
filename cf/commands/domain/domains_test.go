@@ -2,6 +2,7 @@ package domain_test
 
 import (
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
+	"github.com/cloudfoundry/cli/cf/commands/domain"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/errors"
 	"github.com/cloudfoundry/cli/cf/models"
@@ -33,10 +34,15 @@ var _ = Describe("domains command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&domain.ListDomains{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		domainRepo = &testapi.FakeDomainRepository{}
 		requirementsFactory = &testreq.FakeReqFactory{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("domains")
 	})
 
 	runCommand := func(args ...string) bool {

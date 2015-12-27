@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/plugin"
 	"github.com/cloudfoundry/cli/cf/configuration/config_helpers"
 	"github.com/cloudfoundry/cli/cf/configuration/plugin_config"
 	"github.com/cloudfoundry/gofileutils/fileutils"
@@ -36,6 +37,7 @@ var _ = Describe("Uninstall", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&plugin.PluginUninstall{})
 		ui = &testterm.FakeUI{}
 		requirementsFactory = &testreq.FakeReqFactory{}
 
@@ -64,6 +66,7 @@ var _ = Describe("Uninstall", func() {
 	AfterEach(func() {
 		err := os.RemoveAll(fakePluginRepoDir)
 		Expect(err).NotTo(HaveOccurred())
+		command_registry.Commands.RemoveCommand("uninstall-plugin")
 	})
 
 	runCommand := func(args ...string) bool {

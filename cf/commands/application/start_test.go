@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	. "github.com/cloudfoundry/cli/cf/commands/application"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 
 	"github.com/cloudfoundry/cli/cf/api"
 	"github.com/cloudfoundry/cli/cf/command_registry"
@@ -42,7 +42,6 @@ var _ = Describe("start command", func() {
 		logRepo                   *testapi.FakeLogsRepository
 		appInstancesRepo          *testAppInstanaces.FakeAppInstancesRepository
 		appRepo                   *testApplication.FakeApplicationRepository
-		OriginalAppCommand        command_registry.Command
 		deps                      command_registry.Dependency
 		displayApp                *appCmdFakes.FakeAppDisplayer
 	)
@@ -81,11 +80,9 @@ var _ = Describe("start command", func() {
 		return
 	}
 
-	AfterEach(func() {
-		command_registry.Register(OriginalAppCommand)
-	})
-
 	BeforeEach(func() {
+		command_registry.Register(&application.Start{})
+		command_registry.Register(&application.ShowApp{})
 		deps = command_registry.NewDependency()
 		ui = new(testterm.FakeUI)
 		requirementsFactory = &testreq.FakeReqFactory{}
@@ -96,9 +93,6 @@ var _ = Describe("start command", func() {
 		appRepo = &testApplication.FakeApplicationRepository{}
 
 		displayApp = &appCmdFakes.FakeAppDisplayer{}
-
-		//save original command dependency and restore later
-		OriginalAppCommand = command_registry.Commands.FindCommand("app")
 
 		defaultInstanceErrorCodes = []string{"", ""}
 
@@ -148,12 +142,16 @@ var _ = Describe("start command", func() {
 			mutex.Unlock()
 			return nil
 		}
+	})
 
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("start")
+		command_registry.Commands.RemoveCommand("app")
 	})
 
 	callStart := func(args []string) bool {
 		updateCommandDependency(logRepo)
-		cmd := command_registry.Commands.FindCommand("start").(*Start)
+		cmd := command_registry.Commands.FindCommand("start").(*application.Start)
 		cmd.StagingTimeout = 100 * time.Millisecond
 		cmd.StartupTimeout = 200 * time.Millisecond
 		cmd.PingerThrottle = 50 * time.Millisecond
@@ -167,7 +165,7 @@ var _ = Describe("start command", func() {
 
 		updateCommandDependency(logRepoWithTimeout)
 
-		cmd := command_registry.Commands.FindCommand("start").(*Start)
+		cmd := command_registry.Commands.FindCommand("start").(*application.Start)
 		cmd.LogServerConnectionTimeout = 100 * time.Millisecond
 		cmd.StagingTimeout = 100 * time.Millisecond
 		cmd.StartupTimeout = 200 * time.Millisecond
@@ -178,7 +176,7 @@ var _ = Describe("start command", func() {
 		return
 	}
 
-	startAppWithInstancesAndErrors := func(displayApp ApplicationDisplayer, app models.Application, requirementsFactory *testreq.FakeReqFactory) (*testterm.FakeUI, *testApplication.FakeApplicationRepository, *testAppInstanaces.FakeAppInstancesRepository) {
+	startAppWithInstancesAndErrors := func(displayApp application.ApplicationDisplayer, app models.Application, requirementsFactory *testreq.FakeReqFactory) (*testterm.FakeUI, *testApplication.FakeApplicationRepository, *testAppInstanaces.FakeAppInstancesRepository) {
 		appRepo = &testApplication.FakeApplicationRepository{}
 		appRepo.UpdateReturns(app, nil)
 		appRepo.ReadReturns(app, nil)
@@ -209,7 +207,7 @@ var _ = Describe("start command", func() {
 	Describe("timeouts", func() {
 		It("has sane default timeout values", func() {
 			updateCommandDependency(logRepo)
-			cmd := command_registry.Commands.FindCommand("start").(*Start)
+			cmd := command_registry.Commands.FindCommand("start").(*application.Start)
 			Expect(cmd.StagingTimeout).To(Equal(15 * time.Minute))
 			Expect(cmd.StartupTimeout).To(Equal(5 * time.Minute))
 		})
@@ -226,7 +224,7 @@ var _ = Describe("start command", func() {
 			os.Setenv("CF_STARTUP_TIMEOUT", "3")
 
 			updateCommandDependency(logRepo)
-			cmd := command_registry.Commands.FindCommand("start").(*Start)
+			cmd := command_registry.Commands.FindCommand("start").(*application.Start)
 			Expect(cmd.StagingTimeout).To(Equal(6 * time.Minute))
 			Expect(cmd.StartupTimeout).To(Equal(3 * time.Minute))
 		})
@@ -251,7 +249,7 @@ var _ = Describe("start command", func() {
 				requirementsFactory.Application = app
 
 				updateCommandDependency(logRepo)
-				cmd := command_registry.Commands.FindCommand("start").(*Start)
+				cmd := command_registry.Commands.FindCommand("start").(*application.Start)
 				cmd.StagingTimeout = 0
 				cmd.PingerThrottle = 1
 				cmd.StartupTimeout = 1
@@ -291,7 +289,7 @@ var _ = Describe("start command", func() {
 			appInstancesRepo.GetInstancesStub = getInstance
 
 			updateCommandDependency(logRepo)
-			cmd := command_registry.Commands.FindCommand("start").(*Start)
+			cmd := command_registry.Commands.FindCommand("start").(*application.Start)
 			cmd.ApplicationStart(defaultAppForStart, "some-org", "some-space")
 
 			Expect(ui.Outputs).To(ContainSubstrings(
@@ -385,13 +383,13 @@ var _ = Describe("start command", func() {
 
 			logRepo.TailLogsForStub = func(appGuid string, onConnect func(), onMessage func(*logmessage.LogMessage)) error {
 				onConnect()
-				onMessage(testlogs.NewLogMessage("Before close", appGuid, LogMessageTypeStaging, "1", logmessage.LogMessage_ERR, time.Now()))
+				onMessage(testlogs.NewLogMessage("Before close", appGuid, application.LogMessageTypeStaging, "1", logmessage.LogMessage_ERR, time.Now()))
 
 				<-logRepoClosed
 
 				time.Sleep(50 * time.Millisecond)
-				onMessage(testlogs.NewLogMessage("After close 1", appGuid, LogMessageTypeStaging, "1", logmessage.LogMessage_ERR, time.Now()))
-				onMessage(testlogs.NewLogMessage("After close 2", appGuid, LogMessageTypeStaging, "1", logmessage.LogMessage_ERR, time.Now()))
+				onMessage(testlogs.NewLogMessage("After close 1", appGuid, application.LogMessageTypeStaging, "1", logmessage.LogMessage_ERR, time.Now()))
+				onMessage(testlogs.NewLogMessage("After close 2", appGuid, application.LogMessageTypeStaging, "1", logmessage.LogMessage_ERR, time.Now()))
 
 				return nil
 			}

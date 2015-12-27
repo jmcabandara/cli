@@ -36,10 +36,15 @@ var _ = Describe("stop command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Stop{})
 		ui = &testterm.FakeUI{}
 		config = testconfig.NewRepositoryWithDefaults()
 		appRepo = &testApplication.FakeApplicationRepository{}
 		requirementsFactory = &testreq.FakeReqFactory{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("stop")
 	})
 
 	runCommand := func(args ...string) bool {

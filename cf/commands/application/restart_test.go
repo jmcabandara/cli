@@ -1,6 +1,7 @@
 package application_test
 
 import (
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	appCmdFakes "github.com/cloudfoundry/cli/cf/commands/application/fakes"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -23,8 +24,6 @@ var _ = Describe("restart command", func() {
 		stopper             *appCmdFakes.FakeApplicationStopper
 		config              core_config.Repository
 		app                 models.Application
-		originalStop        command_registry.Command
-		originalStart       command_registry.Command
 		deps                command_registry.Dependency
 	)
 
@@ -44,6 +43,7 @@ var _ = Describe("restart command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Restart{})
 		ui = &testterm.FakeUI{}
 		deps = command_registry.NewDependency()
 		requirementsFactory = &testreq.FakeReqFactory{}
@@ -54,10 +54,6 @@ var _ = Describe("restart command", func() {
 		app = models.Application{}
 		app.Name = "my-app"
 		app.Guid = "my-app-guid"
-
-		//save original command and restore later
-		originalStart = command_registry.Commands.FindCommand("start")
-		originalStop = command_registry.Commands.FindCommand("stop")
 
 		//setup fakes to correctly interact with command_registry
 		starter.SetDependencyStub = func(_ command_registry.Dependency, _ bool) command_registry.Command {
@@ -72,8 +68,9 @@ var _ = Describe("restart command", func() {
 	})
 
 	AfterEach(func() {
-		command_registry.Register(originalStart)
-		command_registry.Register(originalStop)
+		command_registry.Commands.RemoveCommand("start")
+		command_registry.Commands.RemoveCommand("stop")
+		command_registry.Commands.RemoveCommand("restart")
 	})
 
 	Describe("requirements", func() {

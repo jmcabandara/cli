@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set +e
+set +ex
 
 go get -u github.com/maximilien/i18n4go/i18n4go
 OUTPUT=$?

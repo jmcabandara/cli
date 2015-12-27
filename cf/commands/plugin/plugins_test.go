@@ -4,6 +4,7 @@ import (
 	"net/rpc"
 
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	plugincmd "github.com/cloudfoundry/cli/cf/commands/plugin"
 	"github.com/cloudfoundry/cli/cf/configuration/plugin_config"
 	testconfig "github.com/cloudfoundry/cli/cf/configuration/plugin_config/fakes"
 	"github.com/cloudfoundry/cli/plugin"
@@ -31,11 +32,16 @@ var _ = Describe("Plugins", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&plugincmd.Plugins{})
 		ui = &testterm.FakeUI{}
 		requirementsFactory = &testreq.FakeReqFactory{}
 		config = &testconfig.FakePluginConfiguration{}
 
 		rpc.DefaultServer = rpc.NewServer()
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("plugins")
 	})
 
 	runCommand := func(args ...string) bool {

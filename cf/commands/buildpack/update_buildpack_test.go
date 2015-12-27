@@ -4,6 +4,7 @@ import (
 	"strings"
 
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
+	"github.com/cloudfoundry/cli/cf/commands/buildpack"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
 	testreq "github.com/cloudfoundry/cli/testhelpers/requirements"
 	testterm "github.com/cloudfoundry/cli/testhelpers/terminal"
@@ -45,10 +46,15 @@ var _ = Describe("Updating buildpack command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&buildpack.UpdateBuildpack{})
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true, BuildpackSuccess: true}
 		ui = new(testterm.FakeUI)
 		repo = &testapi.FakeBuildpackRepository{}
 		bitsRepo = &testapi.FakeBuildpackBitsRepository{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("update-buildpack")
 	})
 
 	runCommand := func(args ...string) bool {

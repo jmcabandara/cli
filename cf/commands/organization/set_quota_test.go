@@ -3,6 +3,7 @@ package organization_test
 import (
 	"github.com/cloudfoundry/cli/cf/api/quotas/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/organization"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -36,10 +37,15 @@ var _ = Describe("set-quota command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&organization.SetQuota{})
 		ui = new(testterm.FakeUI)
 		quotaRepo = &fakes.FakeQuotaRepository{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("set-quota")
 	})
 
 	It("fails with usage when provided too many or two few args", func() {

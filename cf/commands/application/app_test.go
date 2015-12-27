@@ -52,6 +52,7 @@ var _ = Describe("App", func() {
 	)
 
 	BeforeEach(func() {
+		command_registry.Register(&application.ShowApp{})
 		cmd = &application.ShowApp{}
 		flagContext = flags.NewFlagContext(cmd.MetaData().Flags)
 
@@ -87,6 +88,10 @@ var _ = Describe("App", func() {
 
 		applicationRequirement = &fakerequirements.FakeApplicationRequirement{}
 		factory.NewApplicationRequirementReturns(applicationRequirement)
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand(cmd.MetaData().Name)
 	})
 
 	Describe("Requirements", func() {

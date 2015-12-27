@@ -12,6 +12,7 @@ import (
 	"github.com/cloudfoundry/cli/cf/actors/plugin_repo/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
 	registryCmdFakes "github.com/cloudfoundry/cli/cf/command_registry/fakes"
+	pluginCmd "github.com/cloudfoundry/cli/cf/commands/plugin"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/configuration/plugin_config"
 	testPluginConfig "github.com/cloudfoundry/cli/cf/configuration/plugin_config/fakes"
@@ -66,6 +67,7 @@ var _ = Describe("Install", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&pluginCmd.PluginInstall{})
 		ui = &testterm.FakeUI{}
 		requirementsFactory = &testreq.FakeReqFactory{}
 		pluginConfig = &testPluginConfig.FakePluginConfiguration{}
@@ -105,6 +107,7 @@ var _ = Describe("Install", func() {
 	AfterEach(func() {
 		os.Remove(filepath.Join(curDir, pluginFile.Name()))
 		os.Remove(homeDir)
+		command_registry.Commands.RemoveCommand("install-plugin")
 	})
 
 	runCommand := func(args ...string) bool {

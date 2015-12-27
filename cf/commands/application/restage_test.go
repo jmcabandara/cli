@@ -3,6 +3,7 @@ package application_test
 import (
 	testApplication "github.com/cloudfoundry/cli/cf/api/applications/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/errors"
 	"github.com/cloudfoundry/cli/cf/models"
@@ -25,7 +26,6 @@ var _ = Describe("restage command", func() {
 		configRepo          core_config.Repository
 		requirementsFactory *testreq.FakeReqFactory
 		stagingWatcher      *fakeStagingWatcher
-		OriginalCommand     command_registry.Command
 		deps                command_registry.Dependency
 	)
 
@@ -41,6 +41,8 @@ var _ = Describe("restage command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Restage{})
+		command_registry.Register(&application.Start{})
 		ui = &testterm.FakeUI{}
 
 		app = models.Application{}
@@ -52,14 +54,12 @@ var _ = Describe("restage command", func() {
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true, TargetedSpaceSuccess: true}
 
-		//save original command and restore later
-		OriginalCommand = command_registry.Commands.FindCommand("start")
-
 		stagingWatcher = &fakeStagingWatcher{}
 	})
 
 	AfterEach(func() {
-		command_registry.Register(OriginalCommand)
+		command_registry.Commands.RemoveCommand("restage")
+		command_registry.Commands.RemoveCommand("start")
 	})
 
 	runCommand := func(args ...string) bool {

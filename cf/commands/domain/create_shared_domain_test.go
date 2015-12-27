@@ -3,6 +3,7 @@ package domain_test
 import (
 	testapi "github.com/cloudfoundry/cli/cf/api/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/domain"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
 	testconfig "github.com/cloudfoundry/cli/testhelpers/configuration"
@@ -31,9 +32,14 @@ var _ = Describe("Testing with ginkgo", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&domain.CreateSharedDomain{})
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true}
 		domainRepo = &testapi.FakeDomainRepository{}
 		configRepo = testconfig.NewRepositoryWithAccessToken(core_config.TokenInfo{Username: "my-user"})
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("create-shared-domain")
 	})
 
 	runCommand := func(args ...string) bool {

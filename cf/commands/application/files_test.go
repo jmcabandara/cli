@@ -3,6 +3,7 @@ package application_test
 import (
 	testappfiles "github.com/cloudfoundry/cli/cf/api/app_files/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
 	testcmd "github.com/cloudfoundry/cli/testhelpers/commands"
@@ -32,10 +33,15 @@ var _ = Describe("files command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Files{})
 		ui = &testterm.FakeUI{}
 		configRepo = testconfig.NewRepositoryWithDefaults()
 		appFilesRepo = &testappfiles.FakeAppFilesRepository{}
 		requirementsFactory = &testreq.FakeReqFactory{}
+	})
+
+	AfterEach(func() {
+		command_registry.Commands.RemoveCommand("files")
 	})
 
 	runCommand := func(args ...string) bool {

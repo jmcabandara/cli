@@ -3,6 +3,7 @@ package application_test
 import (
 	testApplication "github.com/cloudfoundry/cli/cf/api/applications/fakes"
 	"github.com/cloudfoundry/cli/cf/command_registry"
+	"github.com/cloudfoundry/cli/cf/commands/application"
 	appCmdFakes "github.com/cloudfoundry/cli/cf/commands/application/fakes"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
 	"github.com/cloudfoundry/cli/cf/models"
@@ -25,7 +26,6 @@ var _ = Describe("scale command", func() {
 		ui                  *testterm.FakeUI
 		config              core_config.Repository
 		app                 models.Application
-		OriginalCommand     command_registry.Command
 		deps                command_registry.Dependency
 	)
 
@@ -41,16 +41,12 @@ var _ = Describe("scale command", func() {
 	}
 
 	BeforeEach(func() {
+		command_registry.Register(&application.Scale{})
 		requirementsFactory = &testreq.FakeReqFactory{LoginSuccess: true, TargetedSpaceSuccess: true}
-
-		//save original command and restore later
-		OriginalCommand = command_registry.Commands.FindCommand("restart")
 
 		restarter = &appCmdFakes.FakeApplicationRestarter{}
 		//setup fakes to correctly interact with command_registry
-		restarter.SetDependencyStub = func(_ command_registry.Dependency, _ bool) command_registry.Command {
-			return restarter
-		}
+		restarter.SetDependencyReturns(restarter)
 		restarter.MetaDataReturns(command_registry.CommandMetadata{Name: "restart"})
 
 		appRepo = &testApplication.FakeApplicationRepository{}
@@ -59,7 +55,8 @@ var _ = Describe("scale command", func() {
 	})
 
 	AfterEach(func() {
-		command_registry.Register(OriginalCommand)
+		command_registry.Commands.RemoveCommand("scale")
+		command_registry.Commands.RemoveCommand("restart")
 	})
 
 	Describe("requirements", func() {
