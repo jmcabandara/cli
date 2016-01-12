@@ -119,6 +119,15 @@ var _ = Describe("add-plugin-repo", func() {
 					[]string{"msn.com", "is not a valid url"},
 				))
 			})
+
+			It("should not contain the tip", func() {
+
+				callAddPluginRepo([]string{"repo", "msn.com"})
+
+				Ω(ui.Outputs).To(Not(ContainSubstrings(
+					[]string{"TIP: If you are behind a firewall and require an HTTP proxy, verify the https_proxy environment variable is correctly set. Else, check your network connection."},
+				)))
+			})
 		})
 
 		Context("server does not has a '/list' endpoint", func() {
@@ -177,6 +186,16 @@ var _ = Describe("add-plugin-repo", func() {
 
 				Ω(ui.Outputs).To(ContainSubstrings(
 					[]string{"\"Plugins\" object not found in the responded data"},
+				))
+			})
+		})
+
+		Context("When connection could not be established", func() {
+			It("prints tip", func() {
+				callAddPluginRepo([]string{"repo", "https://localhost:111"})
+
+				Ω(ui.Outputs).To(ContainSubstrings(
+					[]string{"TIP: If you are behind a firewall and require an HTTP proxy, verify the https_proxy environment variable is correctly set. Else, check your network connection."},
 				))
 			})
 		})

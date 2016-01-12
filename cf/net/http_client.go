@@ -91,7 +91,7 @@ func WrapNetworkErrors(host string, err error) error {
 		}
 	}
 
-	return fmt.Errorf("%s: %s", T("Error performing request"), err.Error())
+	return fmt.Errorf("%s: %s\n%s", T("Error performing request"), err.Error(), T("TIP: If you are behind a firewall and require an HTTP proxy, verify the https_proxy environment variable is correctly set. Else, check your network connection."))
 
 }
 

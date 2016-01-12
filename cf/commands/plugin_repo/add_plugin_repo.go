@@ -66,7 +66,8 @@ func (cmd *AddPluginRepo) Execute(c flags.FlagContext) {
 
 	resp, err := http.Get(repoUrl)
 	if err != nil {
-		cmd.ui.Failed(T("There is an error performing request on '{{.repoUrl}}': ", map[string]interface{}{"repoUrl": repoUrl}), err.Error())
+		cmd.ui.Failed(T("There is an error performing request on '{{.repoUrl}}': ", map[string]interface{}{"repoUrl": repoUrl}), err.Error()+
+		"\n"+T("TIP: If you are behind a firewall and require an HTTP proxy, verify the https_proxy environment variable is correctly set. Else, check your network connection."))
 	}
 	defer resp.Body.Close()
 

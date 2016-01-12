@@ -140,5 +140,17 @@ var _ = Describe("HTTP Client", func() {
 			_, ok := err.(*errors.InvalidSSLCert)
 			Expect(ok).To(BeFalse())
 		})
+
+		It("returns a tip when it is a network error", func() {
+			err := WrapNetworkErrors("example.com", errors.New("whatever"))
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(ContainSubstring("TIP: If you are behind a firewall and require an HTTP proxy, verify the https_proxy environment variable is correctly set. Else, check your network connection."))
+		})
+
+		It("does not return a tip when it is not a network error", func() {
+			err := WrapNetworkErrors("example.com", &websocket.DialError{Err: x509.HostnameError{}})
+			Expect(err).To(HaveOccurred())
+			Expect(err.Error()).To(Not(ContainSubstring("TIP: If you are behind a firewall and require an HTTP proxy, verify the https_proxy environment variable is correctly set. Else, check your network connection.")))
+		})
 	})
 })
