@@ -84,8 +84,9 @@ func (cmd *UnmapRoute) Execute(c flags.FlagContext) {
 	path := c.String("path")
 	domain := cmd.domainReq.GetDomain()
 	app := cmd.appReq.GetApplication()
+	port := "" //not configurable at this time
 
-	route, err := cmd.routeRepo.Find(hostName, domain, path)
+	route, err := cmd.routeRepo.Find(hostName, domain, port, path)
 	if err != nil {
 		cmd.ui.Failed(err.Error())
 	}

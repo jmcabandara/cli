@@ -92,8 +92,9 @@ func (cmd *MapRoute) Execute(c flags.FlagContext) {
 	path := c.String("path")
 	domain := cmd.domainReq.GetDomain()
 	app := cmd.appReq.GetApplication()
+	port := 0 //not configurable at this time
 
-	route, apiErr := cmd.routeCreator.CreateRoute(hostName, path, domain, cmd.config.SpaceFields())
+	route, apiErr := cmd.routeCreator.CreateRoute(hostName, port, path, domain, cmd.config.SpaceFields())
 	if apiErr != nil {
 		cmd.ui.Failed(T("Error resolving route:\n{{.Err}}", map[string]interface{}{"Err": apiErr.Error()}))
 	}

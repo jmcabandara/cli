@@ -3,6 +3,7 @@ package application_test
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"syscall"
 
 	fakeactors "github.com/cloudfoundry/cli/cf/actors/fakes"
@@ -131,7 +132,7 @@ var _ = Describe("Push Command", func() {
 		OriginalCommandServiceBind = command_registry.Commands.FindCommand("bind-service")
 
 		routeRepo = &testapi.FakeRouteRepository{}
-		routeRepo.CreateStub = func(host string, domain models.DomainFields, path string) (models.Route, error) {
+		routeRepo.CreateStub = func(host string, domain models.DomainFields, port, path string) (models.Route, error) {
 			// This never returns an error, which means it isn't tested.
 			// This is copied from the old route repo fake.
 			route := models.Route{}
@@ -139,6 +140,7 @@ var _ = Describe("Push Command", func() {
 			route.Domain = domain
 			route.Host = host
 			route.Path = path
+			route.Port, _ = strconv.Atoi(port)
 
 			return route, nil
 		}
@@ -269,7 +271,7 @@ var _ = Describe("Push Command", func() {
 				Expect(routeRepo.CreateCallCount()).To(BeZero())
 
 				Expect(routeRepo.FindCallCount()).To(Equal(1))
-				host, _, _ := routeRepo.FindArgsForCall(0)
+				host, _, _, _ := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal("app-name"))
 
 				Expect(routeRepo.BindCallCount()).To(Equal(1))
@@ -389,14 +391,15 @@ var _ = Describe("Push Command", func() {
 				Expect(*params.SpaceGuid).To(Equal("my-space-guid"))
 
 				Expect(routeRepo.FindCallCount()).To(Equal(1))
-				host, _, _ := routeRepo.FindArgsForCall(0)
+				host, _, _, _ := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal("app-name"))
 
 				Expect(routeRepo.CreateCallCount()).To(Equal(1))
-				createdHost, createdDomainFields, createdPath := routeRepo.CreateArgsForCall(0)
+				createdHost, createdDomainFields, createdPort, createdPath := routeRepo.CreateArgsForCall(0)
 				Expect(createdHost).To(Equal("app-name"))
 				Expect(createdDomainFields.Guid).To(Equal("foo-domain-guid"))
 				Expect(createdPath).To(BeEmpty())
+				Expect(createdPort).To(BeEmpty())
 
 				Expect(routeRepo.BindCallCount()).To(Equal(1))
 				boundRouteGUID, boundAppGUID := routeRepo.BindArgsForCall(0)
@@ -431,10 +434,10 @@ var _ = Describe("Push Command", func() {
 				callPush("-t", "111", "app!name")
 
 				Expect(routeRepo.FindCallCount()).To(Equal(1))
-				host, _, _ := routeRepo.FindArgsForCall(0)
+				host, _, _, _ := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal("appname"))
 				Expect(routeRepo.CreateCallCount()).To(Equal(1))
-				createdHost, _, _ := routeRepo.CreateArgsForCall(0)
+				createdHost, _, _, _ := routeRepo.CreateArgsForCall(0)
 				Expect(createdHost).To(Equal("appname"))
 
 				Expect(ui.Outputs).To(ContainSubstrings(
@@ -500,10 +503,11 @@ var _ = Describe("Push Command", func() {
 				Expect(owningOrgGuid).To(Equal("my-org-guid"))
 
 				Expect(routeRepo.CreateCallCount()).To(Equal(1))
-				createdHost, createdDomainFields, createdPath := routeRepo.CreateArgsForCall(0)
+				createdHost, createdDomainFields, createdPort, createdPath := routeRepo.CreateArgsForCall(0)
 				Expect(createdHost).To(Equal("my-hostname"))
 				Expect(createdDomainFields.Guid).To(Equal("bar-domain-guid"))
 				Expect(createdPath).To(Equal("my-route-path"))
+				Expect(createdPort).To(BeEmpty())
 
 				Expect(routeRepo.BindCallCount()).To(Equal(1))
 				boundRouteGUID, boundAppGUID := routeRepo.BindArgsForCall(0)
@@ -578,14 +582,15 @@ var _ = Describe("Push Command", func() {
 					callPush("-t", "111", "--route-path", "the-route-path", "app-name")
 
 					Expect(routeRepo.FindCallCount()).To(Equal(1))
-					host, _, _ := routeRepo.FindArgsForCall(0)
+					host, _, _, _ := routeRepo.FindArgsForCall(0)
 					Expect(host).To(Equal("app-name"))
 
 					Expect(routeRepo.CreateCallCount()).To(Equal(1))
-					createdHost, createdDomainFields, createdPath := routeRepo.CreateArgsForCall(0)
+					createdHost, createdDomainFields, createdPort, createdPath := routeRepo.CreateArgsForCall(0)
 					Expect(createdHost).To(Equal("app-name"))
 					Expect(createdDomainFields.Guid).To(Equal("shared-domain-guid"))
 					Expect(createdPath).To(Equal("the-route-path"))
+					Expect(createdPort).To(BeEmpty())
 
 					Expect(routeRepo.BindCallCount()).To(Equal(1))
 					boundRouteGUID, boundAppGUID := routeRepo.BindArgsForCall(0)
@@ -623,14 +628,15 @@ var _ = Describe("Push Command", func() {
 					callPush("-t", "111", "app-name")
 
 					Expect(routeRepo.FindCallCount()).To(Equal(1))
-					host, _, _ := routeRepo.FindArgsForCall(0)
+					host, _, _, _ := routeRepo.FindArgsForCall(0)
 					Expect(host).To(Equal("app-name"))
 
 					Expect(routeRepo.CreateCallCount()).To(Equal(1))
-					createdHost, createdDomainFields, createdPath := routeRepo.CreateArgsForCall(0)
+					createdHost, createdDomainFields, createdPort, createdPath := routeRepo.CreateArgsForCall(0)
 					Expect(createdHost).To(Equal("app-name"))
 					Expect(createdDomainFields.Guid).To(Equal("private-domain-guid"))
 					Expect(createdPath).To(BeEmpty())
+					Expect(createdPort).To(BeEmpty())
 
 					Expect(routeRepo.BindCallCount()).To(Equal(1))
 					boundRouteGUID, boundAppGUID := routeRepo.BindArgsForCall(0)
@@ -663,7 +669,7 @@ var _ = Describe("Push Command", func() {
 				It("provides a random hostname when the --random-route flag is passed", func() {
 					callPush("--random-route", "app-name")
 					Expect(routeRepo.FindCallCount()).To(Equal(1))
-					host, _, _ := routeRepo.FindArgsForCall(0)
+					host, _, _, _ := routeRepo.FindArgsForCall(0)
 					Expect(host).To(Equal("app-name-random-host"))
 				})
 
@@ -673,7 +679,7 @@ var _ = Describe("Push Command", func() {
 					callPush("app-name")
 
 					Expect(routeRepo.FindCallCount()).To(Equal(1))
-					host, _, _ := routeRepo.FindArgsForCall(0)
+					host, _, _, _ := routeRepo.FindArgsForCall(0)
 					Expect(host).To(Equal("app-name-random-host"))
 				})
 			})
@@ -877,7 +883,7 @@ var _ = Describe("Push Command", func() {
 				params := appRepo.CreateArgsForCall(0)
 				Expect(*params.Name).To(Equal("app-name"))
 				Expect(routeRepo.CreateCallCount()).To(Equal(1))
-				createdHost, createdDomainFields, _ := routeRepo.CreateArgsForCall(0)
+				createdHost, createdDomainFields, _, _ := routeRepo.CreateArgsForCall(0)
 				Expect(createdHost).To(Equal(""))
 				Expect(createdDomainFields.Guid).To(Equal("bar-domain-guid"))
 			})
@@ -1126,7 +1132,7 @@ var _ = Describe("Push Command", func() {
 					It("adds the route", func() {
 						callPush("existing-app")
 						Expect(routeRepo.CreateCallCount()).To(Equal(1))
-						createdHost, _, _ := routeRepo.CreateArgsForCall(0)
+						createdHost, _, _, _ := routeRepo.CreateArgsForCall(0)
 						Expect(createdHost).To(Equal("new-manifest-host"))
 					})
 				})
@@ -1142,12 +1148,12 @@ var _ = Describe("Push Command", func() {
 				Expect(domainOrgGuid).To(Equal("my-org-guid"))
 
 				Expect(routeRepo.FindCallCount()).To(Equal(1))
-				host, domain, _ := routeRepo.FindArgsForCall(0)
+				host, domain, _, _ := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal("existing-app"))
 				Expect(domain.Name).To(Equal("newdomain.com"))
 
 				Expect(routeRepo.CreateCallCount()).To(Equal(1))
-				createdHost, createdDomainFields, _ := routeRepo.CreateArgsForCall(0)
+				createdHost, createdDomainFields, _, _ := routeRepo.CreateArgsForCall(0)
 				Expect(createdHost).To(Equal("existing-app"))
 				Expect(createdDomainFields.Guid).To(Equal("domain-guid"))
 
@@ -1164,12 +1170,12 @@ var _ = Describe("Push Command", func() {
 				callPush("-n", "new-host", "existing-app")
 
 				Expect(routeRepo.FindCallCount()).To(Equal(1))
-				host, domain, _ := routeRepo.FindArgsForCall(0)
+				host, domain, _, _ := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal("new-host"))
 				Expect(domain.Name).To(Equal("example.com"))
 
 				Expect(routeRepo.CreateCallCount()).To(Equal(1))
-				createdHost, createdDomainFields, _ := routeRepo.CreateArgsForCall(0)
+				createdHost, createdDomainFields, _, _ := routeRepo.CreateArgsForCall(0)
 				Expect(createdHost).To(Equal("new-host"))
 				Expect(createdDomainFields.Guid).To(Equal("domain-guid"))
 
@@ -1202,12 +1208,12 @@ var _ = Describe("Push Command", func() {
 				callPush("--no-hostname", "existing-app")
 
 				Expect(routeRepo.FindCallCount()).To(Equal(1))
-				host, domain, _ := routeRepo.FindArgsForCall(0)
+				host, domain, _, _ := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal(""))
 				Expect(domain.Name).To(Equal("example.com"))
 
 				Expect(routeRepo.CreateCallCount()).To(Equal(1))
-				createdHost, createdDomainFields, _ := routeRepo.CreateArgsForCall(0)
+				createdHost, createdDomainFields, _, _ := routeRepo.CreateArgsForCall(0)
 				Expect(createdHost).To(Equal(""))
 				Expect(createdDomainFields.Guid).To(Equal("domain-guid"))
 

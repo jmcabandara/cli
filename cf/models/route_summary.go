@@ -5,8 +5,9 @@ type RouteSummary struct {
 	Host   string
 	Domain DomainFields
 	Path   string
+	Port   int
 }
 
 func (r RouteSummary) URL() string {
-	return urlStringFromParts(r.Host, r.Domain.Name, r.Path)
+	return urlStringFromParts(r.Host, r.Domain.Name, r.Path, r.Port)
 }

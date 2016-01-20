@@ -77,8 +77,9 @@ func (cmd *UnbindRouteService) Execute(c flags.FlagContext) {
 	host := c.String("n")
 	domain := cmd.domainReq.GetDomain()
 	path := "" // path is not currently supported
+	port := "" // port is not currently supported
 
-	route, err := cmd.routeRepo.Find(host, domain, path)
+	route, err := cmd.routeRepo.Find(host, domain, port, path)
 	if err != nil {
 		cmd.ui.Failed(err.Error())
 	}

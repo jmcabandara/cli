@@ -94,7 +94,8 @@ func (cmd *DeleteRoute) Execute(c flags.FlagContext) {
 	cmd.ui.Say(T("Deleting route {{.URL}}...", map[string]interface{}{"URL": terminal.EntityNameColor(url)}))
 
 	domain := cmd.domainReq.GetDomain()
-	route, err := cmd.routeRepo.Find(host, domain, path)
+	port := "" //not configurable at this time
+	route, err := cmd.routeRepo.Find(host, domain, port, path)
 	if err != nil {
 		if _, ok := err.(*errors.ModelNotFoundError); ok {
 			cmd.ui.Warn(T("Unable to delete, route '{{.URL}}' does not exist.",

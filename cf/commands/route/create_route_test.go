@@ -7,6 +7,7 @@ import (
 	"github.com/cloudfoundry/cli/cf/command_registry"
 	"github.com/cloudfoundry/cli/cf/commands/route"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
+	clierrors "github.com/cloudfoundry/cli/cf/errors"
 	"github.com/cloudfoundry/cli/cf/models"
 	"github.com/cloudfoundry/cli/flags"
 
@@ -155,11 +156,43 @@ var _ = Describe("CreateRoute", func() {
 				Expect(actualRequirements).NotTo(ContainElement(minAPIVersionRequirement))
 			})
 		})
+
+		Context("when the --port option is given", func() {
+			BeforeEach(func() {
+				flagContext.Parse("space-name", "domain-name", "--port", "50000")
+			})
+
+			It("returns a MinAPIVersionRequirement", func() {
+				expectedVersion, err := semver.Make("2.40.0")
+				Expect(err).NotTo(HaveOccurred())
+
+				actualRequirements, err := cmd.Requirements(factory, flagContext)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(factory.NewMinAPIVersionRequirementCallCount()).To(Equal(1))
+				feature, requiredVersion := factory.NewMinAPIVersionRequirementArgsForCall(0)
+				Expect(feature).To(Equal("Option '--port'"))
+				Expect(requiredVersion).To(Equal(expectedVersion))
+				Expect(actualRequirements).To(ContainElement(minAPIVersionRequirement))
+			})
+		})
+
+		Context("when the --port option is not given", func() {
+			BeforeEach(func() {
+				flagContext.Parse("space-name", "domain-name")
+			})
+
+			It("does not return a MinAPIVersionRequirement", func() {
+				actualRequirements, err := cmd.Requirements(factory, flagContext)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(actualRequirements).NotTo(ContainElement(minAPIVersionRequirement))
+			})
+		})
 	})
 
 	Describe("Execute", func() {
 		BeforeEach(func() {
-			err := flagContext.Parse("space-name", "domain-name", "-n", "hostname", "--path", "path")
+			err := flagContext.Parse("space-name", "domain-name", "-n", "hostname", "--path", "path", "--port", "50000")
 			Expect(err).NotTo(HaveOccurred())
 			_, err = cmd.Requirements(factory, flagContext)
 			Expect(err).NotTo(HaveOccurred())
@@ -169,69 +202,109 @@ var _ = Describe("CreateRoute", func() {
 			cmd.Execute(flagContext)
 
 			Expect(routeRepo.CreateInSpaceCallCount()).To(Equal(1))
-			hostname, path, domain, space := routeRepo.CreateInSpaceArgsForCall(0)
+			hostname, port, path, domain, space := routeRepo.CreateInSpaceArgsForCall(0)
 			Expect(hostname).To(Equal("hostname"))
 			Expect(path).To(Equal("path"))
 			Expect(domain).To(Equal("domain-guid"))
 			Expect(space).To(Equal("space-guid"))
+			Expect(port).To(Equal("50000"))
 		})
 
 		Context("when creating the route fails", func() {
-			BeforeEach(func() {
-				routeRepo.CreateInSpaceReturns(models.Route{}, errors.New("create-error"))
+			Context("with http error", func() {
+				Context("with host taken error code", func() {
+					BeforeEach(func() {
+						routeRepo.CreateInSpaceReturns(models.Route{}, clierrors.NewHttpError(400, clierrors.HOST_TAKEN, "host already exists"))
+					})
+
+					It("attempts to find the route", func() {
+						Expect(func() { cmd.Execute(flagContext) }).To(Panic())
+						Expect(routeRepo.FindCallCount()).To(Equal(1))
+					})
+
+					Context("when finding the route fails", func() {
+						BeforeEach(func() {
+							routeRepo.FindReturns(models.Route{}, errors.New("find-error"))
+						})
+
+						It("fails with the original error", func() {
+							Expect(func() { cmd.Execute(flagContext) }).To(Panic())
+							Expect(ui.Outputs).To(ContainSubstrings([]string{"FAILED"}, []string{"host already exists"}))
+						})
+					})
+
+					Context("when a route with the same space guid, but different domain guid is found", func() {
+						It("fails with the original error", func() {
+							Expect(func() { cmd.Execute(flagContext) }).To(Panic())
+							Expect(ui.Outputs).To(ContainSubstrings([]string{"FAILED"}, []string{"host already exists"}))
+						})
+					})
+
+					Context("when a route with the same domain guid, but different space guid is found", func() {
+						It("fails with the original error", func() {
+							Expect(func() { cmd.Execute(flagContext) }).To(Panic())
+							Expect(ui.Outputs).To(ContainSubstrings([]string{"FAILED"}, []string{"host already exists"}))
+						})
+					})
+
+					Context("when a route with the same domain and space guid is found", func() {
+						BeforeEach(func() {
+							routeRepo.FindReturns(models.Route{
+								Host: "hostname",
+								Path: "path",
+								Domain: models.DomainFields{
+									Guid: "domain-guid",
+									Name: "domain-name",
+								},
+								Space: models.SpaceFields{
+									Guid: "space-guid",
+								},
+							}, nil)
+						})
+
+						It("prints a message", func() {
+							cmd.Execute(flagContext)
+							Expect(ui.Outputs).To(ContainSubstrings(
+								[]string{"OK"},
+								[]string{"Route hostname.domain-name/path already exists"},
+							))
+						})
+					})
+				})
+
+				Context("with port taken error code", func() {
+					BeforeEach(func() {
+						routeRepo.CreateInSpaceReturns(models.Route{}, clierrors.NewHttpError(400, clierrors.PORT_TAKEN, "port is taken"))
+					})
+
+					It("attempts to find the route", func() {
+						Expect(func() { cmd.Execute(flagContext) }).To(Panic())
+						Expect(routeRepo.FindCallCount()).To(Equal(1))
+					})
+				})
+
+				Context("with error code other than port taken or host taken", func() {
+					BeforeEach(func() {
+						routeRepo.CreateInSpaceReturns(models.Route{}, clierrors.NewHttpError(400, clierrors.PARSE_ERROR, "oops something went wrong in parsing"))
+					})
+
+					It("does not attempt to find the route and returns the create error", func() {
+						Expect(func() { cmd.Execute(flagContext) }).To(Panic())
+						Expect(routeRepo.FindCallCount()).To(Equal(0))
+						Expect(ui.Outputs).To(ContainSubstrings([]string{"FAILED"}, []string{"oops something went wrong in parsing"}))
+					})
+				})
 			})
 
-			It("attempts to find the route", func() {
-				Expect(func() { cmd.Execute(flagContext) }).To(Panic())
-				Expect(routeRepo.FindCallCount()).To(Equal(1))
-			})
-
-			Context("when finding the route fails", func() {
+			Context("non-http error", func() {
 				BeforeEach(func() {
-					routeRepo.FindReturns(models.Route{}, errors.New("find-error"))
+					routeRepo.CreateInSpaceReturns(models.Route{}, errors.New("create-error"))
 				})
 
-				It("fails with the original error", func() {
+				It("does not attempt to find the route and returns the create error", func() {
 					Expect(func() { cmd.Execute(flagContext) }).To(Panic())
+					Expect(routeRepo.FindCallCount()).To(Equal(0))
 					Expect(ui.Outputs).To(ContainSubstrings([]string{"FAILED"}, []string{"create-error"}))
-				})
-			})
-
-			Context("when a route with the same space guid, but different domain guid is found", func() {
-				It("fails with the original error", func() {
-					Expect(func() { cmd.Execute(flagContext) }).To(Panic())
-					Expect(ui.Outputs).To(ContainSubstrings([]string{"FAILED"}, []string{"create-error"}))
-				})
-			})
-
-			Context("when a route with the same domain guid, but different space guid is found", func() {
-				It("fails with the original error", func() {
-					Expect(func() { cmd.Execute(flagContext) }).To(Panic())
-					Expect(ui.Outputs).To(ContainSubstrings([]string{"FAILED"}, []string{"create-error"}))
-				})
-			})
-
-			Context("when a route with the same domain and space guid is found", func() {
-				BeforeEach(func() {
-					routeRepo.FindReturns(models.Route{
-						Host: "hostname",
-						Path: "path",
-						Domain: models.DomainFields{
-							Guid: "domain-guid",
-							Name: "domain-name",
-						},
-						Space: models.SpaceFields{
-							Guid: "space-guid",
-						},
-					}, nil)
-				})
-
-				It("prints a message", func() {
-					cmd.Execute(flagContext)
-					Expect(ui.Outputs).To(ContainSubstrings(
-						[]string{"OK"},
-						[]string{"Route hostname.domain-name/path already exists"},
-					))
 				})
 			})
 		})
@@ -253,74 +326,105 @@ var _ = Describe("CreateRoute", func() {
 		})
 
 		It("attempts to create a route in the space", func() {
-			cmd.CreateRoute("hostname", "path", domainFields, spaceFields)
+			cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
 
 			Expect(routeRepo.CreateInSpaceCallCount()).To(Equal(1))
-			hostname, path, domain, space := routeRepo.CreateInSpaceArgsForCall(0)
+			hostname, port, path, domain, space := routeRepo.CreateInSpaceArgsForCall(0)
 			Expect(hostname).To(Equal("hostname"))
 			Expect(path).To(Equal("path"))
 			Expect(domain).To(Equal(domainFields.Guid))
 			Expect(space).To(Equal(spaceFields.Guid))
+			Expect(port).To(BeEmpty())
 		})
 
 		Context("when creating the route fails", func() {
-			BeforeEach(func() {
-				routeRepo.CreateInSpaceReturns(models.Route{}, errors.New("create-error"))
+			Context("with http error", func() {
+				Context("with host taken error code", func() {
+					BeforeEach(func() {
+						routeRepo.CreateInSpaceReturns(models.Route{}, clierrors.NewHttpError(400, clierrors.HOST_TAKEN, "host already exists"))
+					})
+
+					It("attempts to find the route", func() {
+						cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
+						Expect(routeRepo.FindCallCount()).To(Equal(1))
+					})
+
+					Context("when finding the route fails", func() {
+						BeforeEach(func() {
+							routeRepo.FindReturns(models.Route{}, errors.New("find-error"))
+						})
+
+						It("returns the original error", func() {
+							_, err := cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
+							Expect(err).To(HaveOccurred())
+							Expect(err.Error()).To(ContainSubstring("host already exists"))
+						})
+					})
+
+					Context("when a route with the same space guid, but different domain guid is found", func() {
+						It("returns the original error", func() {
+							_, err := cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
+							Expect(err).To(HaveOccurred())
+							Expect(err.Error()).To(ContainSubstring("host already exists"))
+						})
+					})
+
+					Context("when a route with the same domain guid, but different space guid is found", func() {
+						It("returns the original error", func() {
+							_, err := cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
+							Expect(err).To(HaveOccurred())
+							Expect(err.Error()).To(ContainSubstring("host already exists"))
+						})
+					})
+
+					Context("when a route with the same domain and space guid is found", func() {
+						BeforeEach(func() {
+							routeRepo.FindReturns(models.Route{
+								Host: "hostname",
+								Path: "path",
+								Domain: models.DomainFields{
+									Guid: "domain-guid",
+									Name: "domain-name",
+								},
+								Space: models.SpaceFields{
+									Guid: "space-guid",
+								},
+							}, nil)
+						})
+
+						It("prints a message that it already exists", func() {
+							cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
+							Expect(ui.Outputs).To(ContainSubstrings(
+								[]string{"OK"},
+								[]string{"Route hostname.domain-name/path already exists"}))
+						})
+					})
+				})
+
+				Context("with port taken error code", func() {
+					BeforeEach(func() {
+						routeRepo.CreateInSpaceReturns(models.Route{}, clierrors.NewHttpError(400, clierrors.PORT_TAKEN, "port already taken"))
+					})
+
+					It("attempts to find the route", func() {
+						_, err := cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
+						Expect(routeRepo.FindCallCount()).To(Equal(1))
+						Expect(err).To(HaveOccurred())
+						Expect(err.Error()).To(ContainSubstring("port already taken"))
+					})
+				})
 			})
 
-			It("attempts to find the route", func() {
-				cmd.CreateRoute("hostname", "path", domainFields, spaceFields)
-				Expect(routeRepo.FindCallCount()).To(Equal(1))
-			})
-
-			Context("when finding the route fails", func() {
+			Context("with non-http error ", func() {
 				BeforeEach(func() {
-					routeRepo.FindReturns(models.Route{}, errors.New("find-error"))
+					routeRepo.CreateInSpaceReturns(models.Route{}, errors.New("create-error"))
 				})
 
-				It("returns the original error", func() {
-					_, err := cmd.CreateRoute("hostname", "path", domainFields, spaceFields)
+				It("attempts to find the route", func() {
+					_, err := cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
+					Expect(routeRepo.FindCallCount()).To(Equal(0))
 					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(Equal("create-error"))
-				})
-			})
-
-			Context("when a route with the same space guid, but different domain guid is found", func() {
-				It("returns the original error", func() {
-					_, err := cmd.CreateRoute("hostname", "path", domainFields, spaceFields)
-					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(Equal("create-error"))
-				})
-			})
-
-			Context("when a route with the same domain guid, but different space guid is found", func() {
-				It("returns the original error", func() {
-					_, err := cmd.CreateRoute("hostname", "path", domainFields, spaceFields)
-					Expect(err).To(HaveOccurred())
-					Expect(err.Error()).To(Equal("create-error"))
-				})
-			})
-
-			Context("when a route with the same domain and space guid is found", func() {
-				BeforeEach(func() {
-					routeRepo.FindReturns(models.Route{
-						Host: "hostname",
-						Path: "path",
-						Domain: models.DomainFields{
-							Guid: "domain-guid",
-							Name: "domain-name",
-						},
-						Space: models.SpaceFields{
-							Guid: "space-guid",
-						},
-					}, nil)
-				})
-
-				It("prints a message that it already exists", func() {
-					cmd.CreateRoute("hostname", "path", domainFields, spaceFields)
-					Expect(ui.Outputs).To(ContainSubstrings(
-						[]string{"OK"},
-						[]string{"Route hostname.domain-name/path already exists"}))
+					Expect(err.Error()).To(ContainSubstring("create-error"))
 				})
 			})
 		})
@@ -331,8 +435,18 @@ var _ = Describe("CreateRoute", func() {
 			})
 
 			It("prints a success message", func() {
-				cmd.CreateRoute("hostname", "path", domainFields, spaceFields)
+				cmd.CreateRoute("hostname", 0, "path", domainFields, spaceFields)
 				Expect(ui.Outputs).To(ContainSubstrings([]string{"OK"}))
+			})
+
+			Context("when port is specified", func() {
+				It("prints a success message with port in it", func() {
+					cmd.CreateRoute("hostname", 10011, "path", domainFields, spaceFields)
+					Expect(ui.Outputs).To(ContainSubstrings(
+						[]string{"Creating route", "hostname", "10011", "my-org", "space-name", "my-user"},
+						[]string{"OK"},
+					))
+				})
 			})
 		})
 	})

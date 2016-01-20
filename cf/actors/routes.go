@@ -1,6 +1,8 @@
 package actors
 
 import (
+	"strconv"
+
 	"github.com/cloudfoundry/cli/cf/api"
 	"github.com/cloudfoundry/cli/cf/errors"
 	. "github.com/cloudfoundry/cli/cf/i18n"
@@ -17,16 +19,24 @@ func NewRouteActor(ui terminal.UI, routeRepo api.RouteRepository) RouteActor {
 	return RouteActor{ui: ui, routeRepo: routeRepo}
 }
 
-func (routeActor RouteActor) FindOrCreateRoute(hostname string, domain models.DomainFields, path string) (route models.Route) {
-	route, apiErr := routeActor.routeRepo.Find(hostname, domain, path)
+func (routeActor RouteActor) FindOrCreateRoute(hostname string, domain models.DomainFields, port, path string) (route models.Route) {
+	route, apiErr := routeActor.routeRepo.Find(hostname, domain, port, path)
 
 	switch apiErr.(type) {
 	case nil:
 		routeActor.ui.Say(T("Using route {{.RouteURL}}", map[string]interface{}{"RouteURL": terminal.EntityNameColor(route.URL())}))
 	case *errors.ModelNotFoundError:
-		routeActor.ui.Say(T("Creating route {{.Hostname}}...", map[string]interface{}{"Hostname": terminal.EntityNameColor(domain.UrlForHostAndPath(hostname, path))}))
+		portInt := 0
+		var err error
+		if port != "" {
+			portInt, err = strconv.Atoi(port)
+			if err != nil {
+				routeActor.ui.Failed(err.Error())
+			}
+		}
+		routeActor.ui.Say(T("Creating route {{.Hostname}}...", map[string]interface{}{"Hostname": terminal.EntityNameColor(domain.UrlForHostAndPath(hostname, path, portInt))}))
 
-		route, apiErr = routeActor.routeRepo.Create(hostname, domain, path)
+		route, apiErr = routeActor.routeRepo.Create(hostname, domain, port, path)
 		if apiErr != nil {
 			routeActor.ui.Failed(apiErr.Error())
 		}

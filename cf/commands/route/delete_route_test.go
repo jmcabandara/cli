@@ -171,10 +171,11 @@ var _ = Describe("DeleteRoute", func() {
 			It("tries to find the route", func() {
 				cmd.Execute(flagContext)
 				Eventually(routeRepo.FindCallCount()).Should(Equal(1))
-				host, domain, path := routeRepo.FindArgsForCall(0)
+				host, domain, port, path := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal(""))
 				Expect(path).To(Equal(""))
 				Expect(domain).To(Equal(fakeDomain))
+				Expect(port).To(Equal(""))
 			})
 
 			Context("when a path is passed", func() {
@@ -188,7 +189,7 @@ var _ = Describe("DeleteRoute", func() {
 				It("tries to find the route with the path", func() {
 					cmd.Execute(flagContext)
 					Expect(routeRepo.FindCallCount()).To(Equal(1))
-					_, _, path := routeRepo.FindArgsForCall(0)
+					_, _, _, path := routeRepo.FindArgsForCall(0)
 					Expect(path).To(Equal("the-path"))
 				})
 			})

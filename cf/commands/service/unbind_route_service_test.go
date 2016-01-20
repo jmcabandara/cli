@@ -134,7 +134,7 @@ var _ = Describe("UnbindRouteService", func() {
 			ui.Inputs = []string{"n"}
 			cmd.Execute(flagContext)
 			Expect(routeRepo.FindCallCount()).To(Equal(1))
-			host, domain, path := routeRepo.FindArgsForCall(0)
+			host, domain, _, path := routeRepo.FindArgsForCall(0)
 			Expect(host).To(Equal(""))
 			Expect(domain).To(Equal(fakeDomain))
 			Expect(path).To(Equal(""))
@@ -151,7 +151,7 @@ var _ = Describe("UnbindRouteService", func() {
 				ui.Inputs = []string{"n"}
 				cmd.Execute(flagContext)
 				Expect(routeRepo.FindCallCount()).To(Equal(1))
-				host, _, _ := routeRepo.FindArgsForCall(0)
+				host, _, _, _ := routeRepo.FindArgsForCall(0)
 				Expect(host).To(Equal("the-hostname"))
 			})
 		})

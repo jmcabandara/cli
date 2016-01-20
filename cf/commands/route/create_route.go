@@ -1,10 +1,13 @@
 package route
 
 import (
+	"strconv"
+
 	"github.com/blang/semver"
 	"github.com/cloudfoundry/cli/cf/api"
 	"github.com/cloudfoundry/cli/cf/command_registry"
 	"github.com/cloudfoundry/cli/cf/configuration/core_config"
+	"github.com/cloudfoundry/cli/cf/errors"
 	. "github.com/cloudfoundry/cli/cf/i18n"
 	"github.com/cloudfoundry/cli/cf/models"
 	"github.com/cloudfoundry/cli/cf/requirements"
@@ -15,7 +18,7 @@ import (
 
 //go:generate counterfeiter -o fakes/fake_route_creator.go . RouteCreator
 type RouteCreator interface {
-	CreateRoute(hostName, path string, domain models.DomainFields, space models.SpaceFields) (route models.Route, apiErr error)
+	CreateRoute(hostName string, port int, path string, domain models.DomainFields, space models.SpaceFields) (route models.Route, apiErr error)
 }
 
 type CreateRoute struct {
@@ -34,16 +37,18 @@ func (cmd *CreateRoute) MetaData() command_registry.CommandMetadata {
 	fs := make(map[string]flags.FlagSet)
 	fs["hostname"] = &cliFlags.StringFlag{Name: "hostname", ShortName: "n", Usage: T("Hostname for the route (required for shared domains)")}
 	fs["path"] = &cliFlags.StringFlag{Name: "path", Usage: T("Path for the route")}
+	fs["port"] = &cliFlags.IntFlag{Name: "port", Usage: T("Port used to create a TCP route. E.g. where domain is example.com and port is 50000, the resulting route is example.com:50000")}
 
 	return command_registry.CommandMetadata{
 		Name:        "create-route",
 		Description: T("Create a url route in a space for later use"),
-		Usage: T(`CF_NAME create-route SPACE DOMAIN [--hostname HOSTNAME] [--path PATH]
+		Usage: T(`CF_NAME create-route SPACE DOMAIN [--hostname HOSTNAME] [--path PATH] [--port PORT]
 
 EXAMPLES:
    CF_NAME create-route my-space example.com                             # example.com
    CF_NAME create-route my-space example.com --hostname myapp            # myapp.example.com
-   CF_NAME create-route my-space example.com --hostname myapp --path foo # myapp.example.com/foo`),
+   CF_NAME create-route my-space example.com --hostname myapp --path foo # myapp.example.com/foo
+   CF_NAME create-route my-space example.com --port 50000                # example.com:50000`),
 		Flags: fs,
 	}
 }
@@ -65,8 +70,16 @@ func (cmd *CreateRoute) Requirements(requirementsFactory requirements.Factory, f
 
 	var reqs []requirements.Requirement
 
-	if fc.String("path") != "" {
+	if fc.IsSet("path") {
 		reqs = append(reqs, requirementsFactory.NewMinAPIVersionRequirement("Option '--path'", requiredVersion))
+	}
+
+	portRequiredVersion, err := semver.Make("2.40.0")
+	if err != nil {
+		panic(err.Error())
+	}
+	if fc.IsSet("port") {
+		reqs = append(reqs, requirementsFactory.NewMinAPIVersionRequirement("Option '--port'", portRequiredVersion))
 	}
 
 	reqs = append(reqs, []requirements.Requirement{
@@ -91,8 +104,8 @@ func (cmd *CreateRoute) Execute(c flags.FlagContext) {
 	space := cmd.spaceReq.GetSpace()
 	domain := cmd.domainReq.GetDomain()
 	path := c.String("path")
-
-	_, apiErr := cmd.CreateRoute(hostName, path, domain, space.SpaceFields)
+	port := c.Int("port")
+	_, apiErr := cmd.CreateRoute(hostName, port, path, domain, space.SpaceFields)
 
 	if apiErr != nil {
 		cmd.ui.Failed(apiErr.Error())
@@ -100,18 +113,28 @@ func (cmd *CreateRoute) Execute(c flags.FlagContext) {
 	}
 }
 
-func (cmd *CreateRoute) CreateRoute(hostName string, path string, domain models.DomainFields, space models.SpaceFields) (models.Route, error) {
+func (cmd *CreateRoute) CreateRoute(hostName string, port int, path string, domain models.DomainFields, space models.SpaceFields) (models.Route, error) {
 	cmd.ui.Say(T("Creating route {{.URL}} for org {{.OrgName}} / space {{.SpaceName}} as {{.Username}}...",
 		map[string]interface{}{
-			"URL":       terminal.EntityNameColor(domain.UrlForHostAndPath(hostName, path)),
+			"URL":       terminal.EntityNameColor(domain.UrlForHostAndPath(hostName, path, port)),
 			"OrgName":   terminal.EntityNameColor(cmd.config.OrganizationFields().Name),
 			"SpaceName": terminal.EntityNameColor(space.Name),
 			"Username":  terminal.EntityNameColor(cmd.config.Username())}))
 
-	route, err := cmd.routeRepo.CreateInSpace(hostName, path, domain.Guid, space.Guid)
+	portStr := ""
+	if port > 0 {
+		portStr = strconv.Itoa(port)
+	}
+
+	route, err := cmd.routeRepo.CreateInSpace(hostName, portStr, path, domain.Guid, space.Guid)
 	if err != nil {
+		httpErr, isHttpError := err.(errors.HttpError)
+		if !isHttpError || (httpErr.ErrorCode() != errors.PORT_TAKEN && httpErr.ErrorCode() != errors.HOST_TAKEN) {
+			return models.Route{}, err
+		}
+
 		var findErr error
-		route, findErr = cmd.routeRepo.Find(hostName, domain, path)
+		route, findErr = cmd.routeRepo.Find(hostName, domain, portStr, path)
 		if findErr != nil {
 			return models.Route{}, err
 		}

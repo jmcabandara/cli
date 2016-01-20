@@ -572,6 +572,10 @@
     "translation": "CF_NAME create-route SPACE DOMAIN [--hostname HOSTNAME] [--path PATH]\n\nEXAMPLES:\n   CF_NAME create-route my-space example.com                     # example.com\n   CF_NAME create-route my-space example.com -n myapp            # myapp.example.com\n   CF_NAME create-route my-space example.com -n myapp --path foo # myapp.example.com/foo"
   },
   {
+    "id": "CF_NAME create-route SPACE DOMAIN [--hostname HOSTNAME] [--path PATH] [--port PORT]\n\nEXAMPLES:\n   CF_NAME create-route my-space example.com                             # example.com\n   CF_NAME create-route my-space example.com --hostname myapp            # myapp.example.com\n   CF_NAME create-route my-space example.com --hostname myapp --path foo # myapp.example.com/foo\n\t CF_NAME create-route my-space example.com --port 50000                # example.com:50000",
+    "translation": ""
+  },
+  {
     "id": "CF_NAME create-security-group SECURITY_GROUP PATH_TO_JSON_RULES_FILE",
     "translation": ""
   },
@@ -3142,6 +3146,10 @@
   {
     "id": "Plugin {{.PluginName}} v{{.Version}} successfully installed.",
     "translation": "Plug-in {{.PluginName}} v{{.Version}} instalando com sucesso."
+  },
+  {
+    "id": "Port used to create a TCP route. E.g. where domain is example.com and port is 50000, the resulting route is example.com:50000.",
+    "translation": ""
   },
   {
     "id": "Print API request diagnostics to stdout",

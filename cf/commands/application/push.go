@@ -243,10 +243,11 @@ func (cmd *Push) processDomainsAndBindRoutes(appParams models.AppParams, routeAc
 func (cmd *Push) createAndBindRoute(host *string, UseRandomHostname bool, routeActor actors.RouteActor, app models.Application, noHostName bool, domain models.DomainFields, routePath *string) {
 	hostname := cmd.hostnameForApp(host, UseRandomHostname, app.Name, noHostName)
 	var route models.Route
+	port := "" //not configurable at this time
 	if routePath != nil {
-		route = routeActor.FindOrCreateRoute(hostname, domain, *routePath)
+		route = routeActor.FindOrCreateRoute(hostname, domain, port, *routePath)
 	} else {
-		route = routeActor.FindOrCreateRoute(hostname, domain, "")
+		route = routeActor.FindOrCreateRoute(hostname, domain, port, "")
 	}
 	routeActor.BindRoute(app, route)
 }
