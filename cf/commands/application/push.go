@@ -218,16 +218,48 @@ func (cmd *Push) Execute(c flags.FlagContext) {
 		cmd.updateRoutes(routeActor, app, appParams)
 
 		if c.String("docker-image") == "" {
-			err := cmd.actor.ProcessPath(*appParams.Path, cmd.processPathCallback(*appParams.Path, app))
-			if err != nil {
-				cmd.ui.Failed(
-					T("Error processing app files: {{.Error}}",
-						map[string]interface{}{
-							"Error": err.Error(),
-						}),
-				)
-				return
-			}
+			cmd.actor.ProcessPath(*appParams.Path, func(appDir string, processPathErr error) {
+				if processPathErr != nil {
+					cmd.ui.Failed(
+						T("Error processing app files: {{.Error}}",
+							map[string]interface{}{
+								"Error": processPathErr.Error(),
+							}),
+					)
+					return
+				}
+
+				localFiles, err := cmd.appfiles.AppFilesInDir(appDir)
+				if err != nil {
+					cmd.ui.Failed(
+						T("Error processing app files in '{{.Path}}': {{.Error}}",
+							map[string]interface{}{
+								"Path":  *appParams.Path,
+								"Error": err.Error(),
+							}),
+					)
+				}
+
+				if len(localFiles) == 0 {
+					cmd.ui.Failed(
+						T("No app files found in '{{.Path}}'",
+							map[string]interface{}{
+								"Path": *appParams.Path,
+							}),
+					)
+				}
+
+				cmd.ui.Say(T("Uploading {{.AppName}}...",
+					map[string]interface{}{"AppName": terminal.EntityNameColor(app.Name)}))
+
+				err = cmd.uploadApp(app.Guid, appDir, path, localFiles)
+				if err != nil {
+					cmd.ui.Failed(fmt.Sprintf(T("Error uploading application.\n{{.ApiErr}}",
+						map[string]interface{}{"ApiErr": err.Error()})))
+					return
+				}
+				cmd.ui.Ok()
+			})
 		}
 
 		if appParams.ServicesToBind != nil {
@@ -235,41 +267,6 @@ func (cmd *Push) Execute(c flags.FlagContext) {
 		}
 
 		cmd.restart(app, appParams, c)
-	}
-}
-
-func (cmd *Push) processPathCallback(path string, app models.Application) func(string) {
-	return func(appDir string) {
-		localFiles, err := cmd.appfiles.AppFilesInDir(appDir)
-		if err != nil {
-			cmd.ui.Failed(
-				T("Error processing app files in '{{.Path}}': {{.Error}}",
-					map[string]interface{}{
-						"Path":  path,
-						"Error": err.Error(),
-					}),
-			)
-		}
-
-		if len(localFiles) == 0 {
-			cmd.ui.Failed(
-				T("No app files found in '{{.Path}}'",
-					map[string]interface{}{
-						"Path": path,
-					}),
-			)
-		}
-
-		cmd.ui.Say(T("Uploading {{.AppName}}...",
-			map[string]interface{}{"AppName": terminal.EntityNameColor(app.Name)}))
-
-		err = cmd.uploadApp(app.Guid, appDir, path, localFiles)
-		if err != nil {
-			cmd.ui.Failed(fmt.Sprintf(T("Error uploading application.\n{{.ApiErr}}",
-				map[string]interface{}{"ApiErr": err.Error()})))
-			return
-		}
-		cmd.ui.Ok()
 	}
 }
 

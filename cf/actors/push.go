@@ -19,7 +19,7 @@ const windowsPathPrefix = `\\?\`
 //go:generate counterfeiter -o fakes/fake_push_actor.go . PushActor
 type PushActor interface {
 	UploadApp(appGuid string, zipFile *os.File, presentFiles []resources.AppFileResource) error
-	ProcessPath(dirOrZipFile string, f func(string)) error
+	ProcessPath(dirOrZipFile string, f func(string, error))
 	GatherFiles(localFiles []models.AppFileFields, appDir string, uploadDir string) ([]resources.AppFileResource, bool, error)
 }
 
@@ -46,42 +46,43 @@ func NewPushActor(appBitsRepo application_bits.ApplicationBitsRepository, zipper
 // was a zip file or an app dir that it was given, and the caller would not be
 // responsible for cleaning up the temporary directory ProcessPath creates when
 // given a zip.
-func (actor PushActorImpl) ProcessPath(dirOrZipFile string, f func(string)) error {
+func (actor PushActorImpl) ProcessPath(dirOrZipFile string, f func(string, error)) {
 	if !actor.zipper.IsZipFile(dirOrZipFile) {
 		appDir, err := filepath.EvalSymlinks(dirOrZipFile)
 		if err != nil {
-			return err
+			f("", err)
+			return
 		}
 
 		if filepath.IsAbs(appDir) {
-			f(appDir)
-		} else {
-			var absPath string
-			absPath, err = filepath.Abs(appDir)
-			if err != nil {
-				return err
-			}
-
-			f(absPath)
+			f(appDir, nil)
+			return
 		}
 
-		return nil
+		absPath, err := filepath.Abs(appDir)
+		if err != nil {
+			f("", err)
+			return
+		}
+
+		f(absPath, nil)
+		return
 	}
 
 	tempDir, err := ioutil.TempDir("", "unzipped-app")
 	if err != nil {
-		return err
+		f("", err)
+		return
 	}
 	defer os.RemoveAll(tempDir)
 
 	err = actor.zipper.Unzip(dirOrZipFile, tempDir)
 	if err != nil {
-		return err
+		f("", err)
+		return
 	}
 
-	f(tempDir)
-
-	return nil
+	f(tempDir, nil)
 }
 
 func (actor PushActorImpl) GatherFiles(localFiles []models.AppFileFields, appDir string, uploadDir string) ([]resources.AppFileResource, bool, error) {
